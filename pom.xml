@@ -26,6 +26,13 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/zap-api-v2-5.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>edu.umass.cs.benchlab</groupId>
+            <artifactId>harlib</artifactId>
+            <version>1.1.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/harlib-1.1.1.jar</systemPath>
+        </dependency>
     </dependencies>
     
 </project>

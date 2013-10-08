@@ -14,6 +14,7 @@ More information on using this API can be found at: https://code.google.com/p/za
 
 - Implement the net.continuumsecurity.proxy.ZAProxyScanner class according to the comments in the LoggingProxy and ScanningProxy interfaces.
 - Note that the LoggingProxy interface makes use of the Har format to store HTTP data.  *ALL* of the contained classes must be populated with data, for example, the HarCookie must have all its fields (path, isHttpOnly, isSecure, etc) populated for every Cookie in the HarRequest and HarResponse.
+- The skeleton project includes the HarLib library for dealing with the Har format:  http://www.frogthinker.org/projects/harlib
 
 # Bounty
 100 of the finest Euros for a working implementation.  If you're interested in working on this, please get in contact first: stephen at continuumsecurity dot net.

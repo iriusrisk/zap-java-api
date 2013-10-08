@@ -55,6 +55,7 @@
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.12" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.12" level="project" />
     <orderEntry type="library" name="Maven: org.owasp:zaproxy-client-api:2.5" level="project" />
+    <orderEntry type="library" name="Maven: edu.umass.cs.benchlab:harlib:1.1.1" level="project" />
   </component>
 </module>
 

@@ -1,7 +1,8 @@
 package net.continuumsecurity.proxy;
 
-import net.continuumsecurity.proxy.model.HarEntry;
-import net.continuumsecurity.proxy.model.HarRequest;
+
+import edu.umass.cs.benchlab.har.HarEntry;
+import edu.umass.cs.benchlab.har.HarRequest;
 import org.openqa.selenium.Proxy;
 
 import java.net.UnknownHostException;
