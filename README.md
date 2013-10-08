@@ -3,8 +3,8 @@ zap-java-api
 
 I require a client API to the OWASP ZAP proxy that implements two specified interfaces:
 
-- net.continuumsecurity.proxy.LoggingProxy
-- net.continuumsecurity.proxy.ScanningProxy
+- [LoggingProxy.java](https://github.com/continuumsecurity/zap-java-api/blob/master/src/main/java/net/continuumsecurity/proxy/LoggingProxy.java)
+- [ScanningProxy.java](https://github.com/continuumsecurity/zap-java-api/blob/master/src/main/java/net/continuumsecurity/proxy/ScanningProxy.java)
 
 The requirements for each interfaces are noted in the method comments.
 There is an existing Java client API to ZAP that implements some, but not all, of the required functions, it's included in the project files in the lib folder.
