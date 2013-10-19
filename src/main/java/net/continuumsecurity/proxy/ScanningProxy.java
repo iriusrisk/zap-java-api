@@ -12,6 +12,11 @@ public interface ScanningProxy extends LoggingProxy {
     List<Alert> getAlerts();
 
     /*
+        As above, but for a specific range of records
+     */
+    List<Alert> getAlerts(int start, int end);
+
+    /*
         The number of available alerts
      */
     int getAlertsCount();
