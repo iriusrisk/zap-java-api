@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface LoggingProxy {
     /*
-        clear all logged data
-     */
+        Call newSession(string, string) on the ZAP api
+    */
 	void clear();
 
     /*
@@ -22,8 +22,20 @@ public interface LoggingProxy {
 	List<HarEntry> getHistory();
 
     /*
+        As above, but only get a range of records
+     */
+    List<HarEntry> getHistory(int start, int end);
+
+    /*
+        How many records are available to fetch?
+     */
+    int getHistoryCount();
+
+    /*
         Search through all the HarRequests for the given regex.  The search should be performed on all request headers as well as post body.
         When a match is found, return the entire HarEntry (request and response).
+
+        Can't use the ZAP search api methods such as: urlsByRequestRegex (regex* baseurl start count ), because these just return the URLs, not the entire request/response pair
      */
 	List<HarEntry> findInRequestHistory(List<HarEntry> history, String regex);
 
@@ -34,6 +46,7 @@ public interface LoggingProxy {
 
     /*
        Make a request using the HarRequest data and follow redirects if specified.  Return all the resulting request/responses.
+       This could be implemented through Apache Commons HttpClient or HtmlUnit.
      */
 	List<HarEntry> makeRequest(HarRequest request, boolean followRedirect) throws Exception;
 
