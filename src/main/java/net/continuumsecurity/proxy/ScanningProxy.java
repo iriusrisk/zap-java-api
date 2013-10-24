@@ -9,21 +9,21 @@ public interface ScanningProxy extends LoggingProxy {
     /*
          Return all results as a list of org.zaproxy.clientapi.core.Alert
      */
-    List<Alert> getAlerts();
+    List<Alert> getAlerts() throws ProxyException;
 
     /*
         As above, but for a specific range of records
      */
-    List<Alert> getAlerts(int start, int end);
+    List<Alert> getAlerts(int start, int count) throws ProxyException;
 
     /*
         The number of available alerts
      */
-    int getAlertsCount();
+    int getAlertsCount() throws ProxyException;
 
     /*
         Perform an active scan of everything that was logged by the proxy
      */
-    public void scan(String url);
+    public void scan(String url) throws ProxyException;
 
 }

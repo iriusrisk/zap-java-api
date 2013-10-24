@@ -13,45 +13,42 @@ public interface LoggingProxy {
     /*
         Call newSession(string, string) on the ZAP api
     */
-	void clear();
+	void clear() throws ProxyException;
 
     /*
         Get the history of all requests and responses, populated into HarEntrys.  A HarEntry consists of a HarRequest and HarResponse, all of the fields
         of these classes, and the classes they contain should be correctly populated.
      */
-	List<HarEntry> getHistory();
+	List<HarEntry> getHistory() throws ProxyException;
 
     /*
         As above, but only get a range of records
      */
-    List<HarEntry> getHistory(int start, int end);
+    List<HarEntry> getHistory(int start, int count) throws ProxyException;
 
     /*
         How many records are available to fetch?
      */
-    int getHistoryCount();
+    int getHistoryCount() throws ProxyException;
 
     /*
         Search through all the HarRequests for the given regex.  The search should be performed on all request headers as well as post body.
         When a match is found, return the entire HarEntry (request and response).
-
-        Can't use the ZAP search api methods such as: urlsByRequestRegex (regex* baseurl start count ), because these just return the URLs, not the entire request/response pair
      */
-	List<HarEntry> findInRequestHistory(List<HarEntry> history, String regex);
+	List<HarEntry> findInRequestHistory(String regex) throws ProxyException;
 
     /*
        Search through all HarResponses for the given regex, this must include response headers and content.
      */
-	List<HarEntry> findInResponseHistory(List<HarEntry> history, String regex);
+	List<HarEntry> findInResponseHistory(String regex) throws ProxyException;
 
     /*
        Make a request using the HarRequest data and follow redirects if specified.  Return all the resulting request/responses.
-       This could be implemented through Apache Commons HttpClient or HtmlUnit.
      */
-	List<HarEntry> makeRequest(HarRequest request, boolean followRedirect) throws Exception;
+	List<HarEntry> makeRequest(HarRequest request, boolean followRedirect) throws ProxyException;
 
     /*
        Return the details of the proxy in Selenium format: org.openqa.selenium.Proxy
      */
-	Proxy seleniumProxy() throws UnknownHostException;
+	Proxy getSeleniumProxy() throws UnknownHostException;
 }
