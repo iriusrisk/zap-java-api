@@ -76,7 +76,7 @@ public class ZAProxyScannerTest {
         System.out.println(hist.get(0).getRequest().toString());
         System.out.println(hist.get(1).getRequest().toString());
 
-        //assertEquals(1,hist.size());
+        assertEquals(1,hist.size());
         assertTrue(hist.get(0).getRequest().getMethod().equals("GET"));
         assertTrue(hist.get(0).getRequest().getQueryString().toString().contains("q"));
         assertTrue(hist.get(0).getRequest().getQueryString().toString().contains("continuumsecurity"));
@@ -84,6 +84,6 @@ public class ZAProxyScannerTest {
         assertEquals(200, hist.get(0).getResponse().getStatus());
         String content = new String(Base64.decode(hist.get(0).getResponse().getContent().getText()));
         System.out.println(content);
-        assertTrue(content.contains("continuumsecurity.net"));
+        assertTrue(content.contains("continuum security"));
     }
 }
