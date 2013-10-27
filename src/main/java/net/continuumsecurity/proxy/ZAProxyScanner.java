@@ -89,12 +89,13 @@ public class ZAProxyScanner implements ScanningProxy {
     }
 
     public void scan(String url) throws ProxyException {
-        try {
+         try {
             clientApi.ascan.scan(url, "false", "false");
-        } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
-        }
-    }
+            clientApi.ascan.scan(url, "true", "false");
+         } catch (ClientApiException e) {
+             throw new ProxyException("Error occured while accessing ZAP.", e);
+         }
+     }
 
     public void clear() throws ProxyException {
         try {
