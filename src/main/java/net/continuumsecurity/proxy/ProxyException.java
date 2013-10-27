@@ -1,6 +1,6 @@
 package net.continuumsecurity.proxy;
 
-public class ProxyException extends Exception {
+public class ProxyException extends RuntimeException {
 
     private static final long serialVersionUID = -8089119902100465025L;
 
