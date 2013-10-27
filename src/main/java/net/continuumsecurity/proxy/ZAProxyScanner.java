@@ -60,7 +60,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.isExtendedApiAvailable();
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -68,7 +68,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getAlerts("", -1, -1);
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -76,7 +76,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getAlerts("", start, count);
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -84,16 +84,15 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getAlertsCount("");
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
     public void scan(String url) throws ProxyException {
          try {
-            clientApi.ascan.scan(url, "false", "false");
             clientApi.ascan.scan(url, "true", "false");
          } catch (ClientApiException e) {
-             throw new ProxyException("Error occured while accessing ZAP.", e);
+             throw new ProxyException("Error occurred while accessing ZAP.", e);
          }
      }
 
@@ -101,7 +100,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             clientApi.core.newSession("", "false");
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -109,7 +108,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHar("", -1, -1);
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -117,7 +116,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHar("", start, count);
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -125,7 +124,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesCount("");
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -133,7 +132,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHarByRequestRegex(regex, "", -1, -1);
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -141,7 +140,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHarByResponseRegex(regex, "", -1, -1);
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
@@ -149,7 +148,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.makeRequestHar(request, followRedirect);
         } catch (ClientApiException e) {
-            throw new ProxyException("Error occured while accessing ZAP.", e);
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
 
