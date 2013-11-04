@@ -334,6 +334,7 @@ public class ZAProxyScanner implements ScanningProxy {
                     in.close();
                     out.close();
                 }
+                System.out.println("Length: "+out.toByteArray().length);
                 return out.toByteArray();
 
             } catch (Exception e) {
