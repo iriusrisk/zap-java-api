@@ -26,4 +26,9 @@ public interface ScanningProxy extends LoggingProxy {
      */
     public void scan(String url) throws ProxyException;
 
+    /*
+        Return the percentage completion of the current scan
+     */
+    public int getPercentComplete() throws ProxyException;
+
 }

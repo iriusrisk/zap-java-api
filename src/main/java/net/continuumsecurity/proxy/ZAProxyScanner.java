@@ -24,6 +24,11 @@ public class ZAProxyScanner implements ScanningProxy {
 
     private final Proxy seleniumProxy;
 
+    public ZAProxyScanner(String zapPath,String host, int port) throws IllegalArgumentException, ProxyException {
+
+        this(host,port);
+    }
+
     public ZAProxyScanner(String host, int port) throws IllegalArgumentException, ProxyException {
         validateHost(host);
         validatePort(port);
@@ -60,6 +65,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.isExtendedApiAvailable();
         } catch (ClientApiException e) {
+            e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -68,6 +74,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getAlerts("", -1, -1);
         } catch (ClientApiException e) {
+            e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -76,6 +83,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getAlerts("", start, count);
         } catch (ClientApiException e) {
+            e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -84,6 +92,7 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getAlertsCount("");
         } catch (ClientApiException e) {
+            e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -92,14 +101,25 @@ public class ZAProxyScanner implements ScanningProxy {
          try {
             clientApi.ascan.scan(url, "true", "false");
          } catch (ClientApiException e) {
+             e.printStackTrace();
              throw new ProxyException("Error occurred while accessing ZAP.", e);
          }
      }
+
+    public int getPercentComplete() throws ProxyException {
+        try {
+            return clientApi.getPercentComplete();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
 
     public void clear() throws ProxyException {
         try {
             clientApi.core.newSession("", "false");
         } catch (ClientApiException e) {
+            e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -108,6 +128,8 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHar("", -1, -1);
         } catch (ClientApiException e) {
+            e.printStackTrace();
+
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -116,6 +138,8 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHar("", start, count);
         } catch (ClientApiException e) {
+            e.printStackTrace();
+
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -124,6 +148,8 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesCount("");
         } catch (ClientApiException e) {
+
+            e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -132,6 +158,8 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHarByRequestRegex(regex, "", -1, -1);
         } catch (ClientApiException e) {
+            e.printStackTrace();
+
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -140,6 +168,8 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.getMessagesHarByResponseRegex(regex, "", -1, -1);
         } catch (ClientApiException e) {
+            e.printStackTrace();
+
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -148,6 +178,8 @@ public class ZAProxyScanner implements ScanningProxy {
         try {
             return clientApi.makeRequestHar(request, followRedirect);
         } catch (ClientApiException e) {
+            e.printStackTrace();
+
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
@@ -198,6 +230,10 @@ public class ZAProxyScanner implements ScanningProxy {
             return getInteger(extendedApi.alertsCount(baseUrl));
         }
 
+        public int getPercentComplete() throws ClientApiException {
+            return getInteger(ascan.status());
+        }
+
         public List<HarEntry> getMessagesHar(String baseUrl, int start, int count) throws ClientApiException {
             return getHarEntries(getHarLog(extendedApi.messagesHar(baseUrl, Integer.toString(start), Integer.toString(count))));
         }
@@ -230,7 +266,7 @@ public class ZAProxyScanner implements ScanningProxy {
                     Boolean.toString(followRedirect))));
         }
 
-        private String convertHarRequestToString(HarRequest request) throws ClientApiException {
+        public String convertHarRequestToString(HarRequest request) throws ClientApiException {
             try {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 JsonGenerator g = new JsonFactory().createJsonGenerator(os);
@@ -286,7 +322,7 @@ public class ZAProxyScanner implements ScanningProxy {
                 HttpURLConnection uc = (HttpURLConnection) url.openConnection(proxy);
                 InputStream in = uc.getInputStream();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte[] buffer = new byte[8 * 1024];
+                byte[] buffer = new byte[1024];
                 try {
                     int bytesRead;
                     while ((bytesRead = in.read(buffer)) != -1) {
@@ -295,8 +331,8 @@ public class ZAProxyScanner implements ScanningProxy {
                 } catch (IOException e) {
                     throw new ClientApiException(e);
                 } finally {
-                    out.close();
                     in.close();
+                    out.close();
                 }
                 return out.toByteArray();
 

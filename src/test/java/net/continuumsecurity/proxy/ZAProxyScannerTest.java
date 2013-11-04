@@ -2,23 +2,18 @@ package net.continuumsecurity.proxy;
 
 
 import edu.umass.cs.benchlab.har.HarEntry;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openqa.selenium.By;
+import edu.umass.cs.benchlab.har.HarRequest;
+import edu.umass.cs.benchlab.har.HarResponse;
+import org.junit.*;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.webbitserver.helpers.Base64;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.thoughtworks.selenium.SeleneseTestBase.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ZAProxyScannerTest {
@@ -27,21 +22,22 @@ public class ZAProxyScannerTest {
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
     static String CHROME = "src/test/resources/chromedriver";
-    static String GOOGLE = "http://www.google.com";
+    static String BASEURL = "http://localhost:8080/ropeytasks-0.1/";
 
     @BeforeClass
-    public static void configure() throws ProxyException, UnknownHostException {
-        zaproxy = new ZAProxyScanner(HOST,PORT);
+    public static void configure() throws Exception {
+        zaproxy = new ZAProxyScanner(HOST, PORT);
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability(CapabilityType.PROXY,zaproxy.getSeleniumProxy());
+        capabilities.setCapability(CapabilityType.PROXY, zaproxy.getSeleniumProxy());
 
         System.setProperty("webdriver.chrome.driver", CHROME);
         driver = new ChromeDriver(capabilities);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+
     }
 
     @AfterClass
-    public static void teardown() {
+    public static void tearDown() throws Exception {
         driver.close();
     }
 
@@ -53,37 +49,21 @@ public class ZAProxyScannerTest {
 
     @Test
     public void testGetHistory() throws ProxyException {
-        driver.get(GOOGLE);
+        driver.get(BASEURL);
         List<HarEntry> history = zaproxy.getHistory();
-        assertTrue(history.size() > 1); //should redirect to https
-        assertTrue(history.get(history.size() - 1).getRequest().getUrl().startsWith("https"));
+        assertTrue(history.size() > 1); //should redirect to login
+        Assert.assertEquals(history.get(0).getResponse().getStatus(),302);
     }
 
     @Test
-    public void testFindInRequestHistory() throws ProxyException {
-        driver.get(GOOGLE);
-        WebElement element = driver.findElement(By.name("q"));
-        element.sendKeys("continuumsecurity");
-        element.submit();
+    public void testMakeRequest() throws IOException {
+        driver.get(BASEURL+"task/search?q=test&search=Search");
+        HarRequest origRequest = zaproxy.getHistory().get(0).getRequest();
+        HarResponse origResponse = zaproxy.getHistory().get(0).getResponse();
+        List<HarEntry> responses = zaproxy.makeRequest(origRequest, true);
+        HarResponse manualResponse = responses.get(0).getResponse();
 
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-        List<HarEntry> hist = zaproxy.findInRequestHistory("continuumsecurity");
-        System.out.println(hist.get(0).getRequest().toString());
-        System.out.println(hist.get(1).getRequest().toString());
-
-        assertEquals(1,hist.size());
-        assertTrue(hist.get(0).getRequest().getMethod().equals("GET"));
-        assertTrue(hist.get(0).getRequest().getQueryString().toString().contains("q"));
-        assertTrue(hist.get(0).getRequest().getQueryString().toString().contains("continuumsecurity"));
-        assertEquals("HTTP/1.1", hist.get(0).getRequest().getHttpVersion());
-        assertEquals(200, hist.get(0).getResponse().getStatus());
-        String content = new String(Base64.decode(hist.get(0).getResponse().getContent().getText()));
-        System.out.println(content);
-        assertTrue(content.contains("continuum security"));
+        Assert.assertEquals(origResponse.getBodySize(),manualResponse.getBodySize());
+        Assert.assertEquals(origResponse.getContent().getText(),manualResponse.getContent().getText());
     }
 }
