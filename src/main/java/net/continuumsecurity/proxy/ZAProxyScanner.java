@@ -13,6 +13,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
@@ -298,6 +299,32 @@ public class ZAProxyScanner implements ScanningProxy {
             return harLog.getEntries().getEntries();
         }
 
+        @Override
+        public ApiResponse callApi(String component, String type, String method, Map<String, String> params)
+                throws ClientApiException {
+            Map<String, String> encodedParams = null;
+            if (params != null) {
+                encodedParams = new HashMap<String, String>();
+                for (Map.Entry<String, String> p : params.entrySet()) {
+                    String paramValue = p.getValue();
+                    if (paramValue != null) {
+                        paramValue = encodeQueryParam(paramValue);
+                    }
+                    encodedParams.put(encodeQueryParam(p.getKey()), paramValue);
+                }
+            }
+            return super.callApi(component, type, method, encodedParams);
+        }
+
+        private static String encodeQueryParam(String param) {
+            try {
+                return URLEncoder.encode(param, "UTF-8");
+            } catch (UnsupportedEncodingException ignore) {
+                // UTF-8 is a standard charset.
+            }
+            return param;
+        }
+
         protected byte[] callApiOther(String component, String type, String method, Map<String, String> params)
                 throws ClientApiException {
             StringBuilder sb = new StringBuilder(250);
@@ -305,10 +332,10 @@ public class ZAProxyScanner implements ScanningProxy {
             if (params != null) {
                 sb.append('?');
                 for (Map.Entry<String, String> p : params.entrySet()) {
-                    sb.append(p.getKey());
+                    sb.append(encodeQueryParam(p.getKey()));
                     sb.append('=');
                     if (p.getValue() != null) {
-                        sb.append(p.getValue());
+                        sb.append(encodeQueryParam(p.getValue()));
                     }
                     sb.append('&');
                 }
