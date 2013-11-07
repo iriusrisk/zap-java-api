@@ -1,7 +1,6 @@
 package net.continuumsecurity.proxy;
 
 
-import edu.umass.cs.benchlab.har.HarCookie;
 import edu.umass.cs.benchlab.har.HarEntry;
 import edu.umass.cs.benchlab.har.HarRequest;
 import edu.umass.cs.benchlab.har.HarResponse;
@@ -73,25 +72,20 @@ public class ZAProxyScannerTest {
     @Test
     public void testCookiesWithMakeRequest() throws IOException {
         openLoginPage();
-        login("bob","password");
-        assert driver.getPageSource().contains("Welcome");
+        login("bob","password");        //sets a session ID cookie
         String sessionID = driver.manage().getCookieNamed("JSESSIONID").getValue();
-        HarRequest copy = null;
-        for (HarEntry entry : zaproxy.getHistory()) {
-            if (entry.getRequest().getMethod().equalsIgnoreCase("POST")) {
-                copy = entry.getRequest();
-            }
-        }
-        boolean foundSessionID = false;
-        for (HarCookie cookie : copy.getCookies().getCookies()) {
-            if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
-                foundSessionID = true;
-                cookie.setValue("nothing");
-            }
-        }
-        assert foundSessionID;
+        assert sessionID.length() > 4;
+
+        List<HarEntry> history = zaproxy.getHistory();
+        HarRequest copy = history.get(history.size() - 1).getRequest(); //The last request will contain a session ID
+        assert copy.getCookies().getCookies().get(0).getName().equalsIgnoreCase("JSESSIONID");
+        copy.getCookies().getCookies().get(0).setValue("nothing");  //Set a new value for the session ID
+
         List<HarEntry> responses = zaproxy.makeRequest(copy,true);
+        //The changed session ID
         assertEquals("nothing", responses.get(0).getRequest().getCookies().getCookies().get(0).getValue());
+
+
     }
 
     public void openLoginPage() {
