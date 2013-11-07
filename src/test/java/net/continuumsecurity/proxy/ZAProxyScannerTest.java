@@ -1,12 +1,14 @@
 package net.continuumsecurity.proxy;
 
 
+import edu.umass.cs.benchlab.har.HarCookie;
 import edu.umass.cs.benchlab.har.HarEntry;
 import edu.umass.cs.benchlab.har.HarRequest;
 import edu.umass.cs.benchlab.har.HarResponse;
 import org.junit.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.thoughtworks.selenium.SeleneseTestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ZAProxyScannerTest {
@@ -22,7 +25,7 @@ public class ZAProxyScannerTest {
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
     static String CHROME = "src/test/resources/chromedriver";
-    static String BASEURL = "http://localhost:8080/ropeytasks-0.1/";
+    static String BASEURL = "http://localhost:9110/ropeytasks/";
 
     @BeforeClass
     public static void configure() throws Exception {
@@ -30,8 +33,8 @@ public class ZAProxyScannerTest {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(CapabilityType.PROXY, zaproxy.getSeleniumProxy());
 
-        System.setProperty("webdriver.chrome.driver", CHROME);
-        driver = new ChromeDriver(capabilities);
+        //System.setProperty("webdriver.chrome.driver", CHROME);
+        driver = new FirefoxDriver(capabilities);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
     }
@@ -66,4 +69,41 @@ public class ZAProxyScannerTest {
         Assert.assertEquals(origResponse.getBodySize(),manualResponse.getBodySize());
         Assert.assertEquals(origResponse.getContent().getText(),manualResponse.getContent().getText());
     }
+
+    @Test
+    public void testCookiesWithMakeRequest() throws IOException {
+        openLoginPage();
+        login("bob","password");
+        assert driver.getPageSource().contains("Welcome");
+        String sessionID = driver.manage().getCookieNamed("JSESSIONID").getValue();
+        HarRequest copy = null;
+        for (HarEntry entry : zaproxy.getHistory()) {
+            if (entry.getRequest().getMethod().equalsIgnoreCase("POST")) {
+                copy = entry.getRequest();
+            }
+        }
+        boolean foundSessionID = false;
+        for (HarCookie cookie : copy.getCookies().getCookies()) {
+            if (cookie.getName().equalsIgnoreCase("JSESSIONID")) {
+                foundSessionID = true;
+                cookie.setValue("nothing");
+            }
+        }
+        assert foundSessionID;
+        List<HarEntry> responses = zaproxy.makeRequest(copy,true);
+        assertEquals("nothing", responses.get(0).getRequest().getCookies().getCookies().get(0).getValue());
+    }
+
+    public void openLoginPage() {
+        driver.get(BASEURL + "user/login");
+    }
+
+    public void login(String user,String pass) {
+        driver.findElement(By.id("username")).clear();
+        driver.findElement(By.id("username")).sendKeys(user);
+        driver.findElement(By.id("password")).clear();
+        driver.findElement(By.id("password")).sendKeys(pass);
+        driver.findElement(By.name("_action_login")).click();
+    }
+
 }
