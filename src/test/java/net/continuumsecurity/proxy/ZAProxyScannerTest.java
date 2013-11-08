@@ -78,15 +78,14 @@ public class ZAProxyScannerTest {
 
         List<HarEntry> history = zaproxy.getHistory();
         HarRequest copy = history.get(history.size() - 1).getRequest(); //The last request will contain a session ID
-        assert copy.getCookies().getCookies().get(0).getName().equalsIgnoreCase("JSESSIONID");
-        copy.getCookies().getCookies().get(0).setValue("nothing");  //Set a new value for the session ID
+        copy = HarUtils.changeCookieValue(copy,"JSESSIONID","nothing");
 
         List<HarEntry> responses = zaproxy.makeRequest(copy,true);
         //The changed session ID
         assertEquals("nothing", responses.get(0).getRequest().getCookies().getCookies().get(0).getValue());
-
-
     }
+
+
 
     public void openLoginPage() {
         driver.get(BASEURL + "user/login");

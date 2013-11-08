@@ -10,11 +10,7 @@ import org.openqa.selenium.Proxy;
 import org.zaproxy.clientapi.core.*;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
