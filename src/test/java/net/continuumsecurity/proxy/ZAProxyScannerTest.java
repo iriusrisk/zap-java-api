@@ -24,7 +24,7 @@ public class ZAProxyScannerTest {
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
     static String CHROME = "src/test/resources/chromedriver";
-    static String BASEURL = "http://localhost:9110/ropeytasks/";
+    static String BASEURL = "http://localhost:9090/";
 
     @BeforeClass
     public static void configure() throws Exception {
@@ -71,12 +71,19 @@ public class ZAProxyScannerTest {
 
     @Test
     public void testCookiesWithMakeRequest() throws IOException {
+        System.out.println("Opening login page");
         openLoginPage();
+        System.out.println("Logging on");
+
         login("bob","password");        //sets a session ID cookie
+
         String sessionID = driver.manage().getCookieNamed("JSESSIONID").getValue();
         assert sessionID.length() > 4;
-
+        System.out.println("getting history");
         List<HarEntry> history = zaproxy.getHistory();
+        System.out.println("clearing history");
+        zaproxy.clear();
+        System.out.println("cleared");
         HarRequest copy = history.get(history.size() - 1).getRequest(); //The last request will contain a session ID
         copy = HarUtils.changeCookieValue(copy,"JSESSIONID","nothing");
 
