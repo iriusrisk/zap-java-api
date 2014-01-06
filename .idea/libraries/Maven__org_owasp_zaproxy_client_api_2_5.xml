@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Maven: org.owasp:zaproxy-client-api:2.5">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/zap-api-v2-5.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

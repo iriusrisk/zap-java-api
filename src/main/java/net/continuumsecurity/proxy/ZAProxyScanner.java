@@ -33,7 +33,6 @@ public class ZAProxyScanner implements ScanningProxy {
         validatePort(port);
 
         clientApi = new ClientApi(host, port);
-
         validateMinimumRequiredZapVersion();
 
         seleniumProxy = new Proxy();

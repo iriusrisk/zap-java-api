@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Maven: edu.umass.cs.benchlab:harlib:1.1.1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/harlib-1.1.1.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
