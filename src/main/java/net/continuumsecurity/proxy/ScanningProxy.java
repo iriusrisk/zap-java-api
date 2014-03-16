@@ -29,6 +29,11 @@ public interface ScanningProxy extends LoggingProxy {
     /*
         Return the percentage completion of the current scan
      */
-    public int getPercentComplete() throws ProxyException;
+    public int getScanStatus() throws ProxyException;
 
+    public void setEnableScanners(String ids, boolean enabled) throws ProxyException;
+
+    public void disableAllScanners() throws ProxyException;
+
+    public void setEnablePassiveScan(boolean enabled) throws ProxyException;
 }

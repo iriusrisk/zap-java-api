@@ -94,6 +94,8 @@ public class ZAProxyScannerTest {
 
 
 
+
+
     public void openLoginPage() {
         driver.get(BASEURL + "user/login");
     }

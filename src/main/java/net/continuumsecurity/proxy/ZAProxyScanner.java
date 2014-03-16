@@ -9,11 +9,14 @@ import org.codehaus.jackson.JsonGenerator;
 import org.openqa.selenium.Proxy;
 import org.zaproxy.clientapi.core.*;
 
-import java.io.*;
-import java.net.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ZAProxyScanner implements ScanningProxy {
+public class ZAProxyScanner implements ScanningProxy, Spider {
 
     private static final String MINIMUM_ZAP_DAILY_VERSION = "D-2013-11-17";
     // TODO Update with valid version number when a new main ZAP release is available.
@@ -78,6 +81,41 @@ public class ZAProxyScanner implements ScanningProxy {
         }
     }
 
+    @Override
+    public void setEnableScanners(String ids, boolean enabled) throws ProxyException {
+        try {
+            if (enabled) {
+                clientApi.ascan.enableScanners(ids);
+            } else {
+                clientApi.ascan.disableScanners(ids);
+            }
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public void disableAllScanners() throws ProxyException {
+        try {
+            clientApi.pscan.setEnabled("false");
+            clientApi.ascan.disableAllScanners();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public void setEnablePassiveScan(boolean enabled) throws ProxyException {
+        try {
+            clientApi.pscan.setEnabled(Boolean.toString(enabled));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
     public List<Alert> getAlerts() throws ProxyException {
         return getAlerts(-1, -1);
     }
@@ -109,7 +147,7 @@ public class ZAProxyScanner implements ScanningProxy {
          }
      }
 
-    public int getPercentComplete() throws ProxyException {
+    public int getScanStatus() throws ProxyException {
         try {
             return ClientApiUtils.getInteger(clientApi.ascan.status());
         } catch (ClientApiException e) {
@@ -120,7 +158,7 @@ public class ZAProxyScanner implements ScanningProxy {
 
     public void clear() throws ProxyException {
         try {
-            clientApi.core.newSession("", "false");
+            clientApi.core.newSession("", "true");
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -201,6 +239,83 @@ public class ZAProxyScanner implements ScanningProxy {
         }
 
         return -1;
+    }
+
+    @Override
+    public void spider(String url) {
+        try {
+            clientApi.spider.scan(url);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public void excludeFromScan(String regex) {
+        try {
+            clientApi.spider.excludeFromScan(regex);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public void setMaxDepth(int depth) {
+        try {
+            clientApi.spider.setOptionMaxDepth(depth);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public void setPostForms(boolean post) {
+        try {
+            clientApi.spider.setOptionPostForm(post);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public void setThreadCount(int threads) {
+        try {
+            clientApi.spider.setOptionThreadCount(threads);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+
+    @Override
+    public int getSpiderStatus() {
+        try {
+            return ClientApiUtils.getInteger(clientApi.spider.status());
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public List<String> getSpiderResults() {
+        List<String> results = new ArrayList<String>();
+        try {
+            ApiResponseList responseList = (ApiResponseList)clientApi.spider.results();
+            for (ApiResponse response : responseList.getItems()) {
+                results.add(((ApiResponseElement)response).getValue());
+            }
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+
+        return results;
     }
 
     private static class ClientApiUtils {
