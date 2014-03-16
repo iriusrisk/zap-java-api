@@ -9,7 +9,7 @@ public class SpiderTest {
     static ZAProxyScanner zaproxy;
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
-    static String BASEURL = "http://www.google.es";
+    static String BASEURL = "http://localhost:9110/ropeytasks/user/login";
 
     @BeforeClass
     public static void configure() throws Exception {
