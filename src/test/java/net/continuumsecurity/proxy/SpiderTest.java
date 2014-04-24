@@ -13,7 +13,7 @@ public class SpiderTest {
 
     @BeforeClass
     public static void configure() throws Exception {
-        zaproxy = new ZAProxyScanner(HOST, PORT);
+        zaproxy = new ZAProxyScanner(HOST, PORT,"");
     }
 
     @Test

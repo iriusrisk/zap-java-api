@@ -20,20 +20,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     private static final String MINIMUM_ZAP_DAILY_VERSION = "D-2013-11-17";
     // TODO Update with valid version number when a new main ZAP release is available.
-    private static final String MINIMUM_ZAP_VERSION = "";
+    private static final String MINIMUM_ZAP_VERSION = "2.3";
 
     private final ClientApi clientApi;
-
     private final Proxy seleniumProxy;
+    private final String apiKey;
 
-    public ZAProxyScanner(String zapPath,String host, int port) throws IllegalArgumentException, ProxyException {
 
-        this(host,port);
-    }
-
-    public ZAProxyScanner(String host, int port) throws IllegalArgumentException, ProxyException {
+    public ZAProxyScanner(String host, int port, String apiKey) throws IllegalArgumentException, ProxyException {
         validateHost(host);
         validatePort(port);
+        this.apiKey = apiKey;
 
         clientApi = new ClientApi(host, port);
         validateMinimumRequiredZapVersion();
@@ -82,12 +79,22 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     }
 
     @Override
+    public void setAttackStrength(String strength) throws ProxyException {
+        try {
+            clientApi.ascan.setOptionAttackStrength(apiKey,strength);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
     public void setEnableScanners(String ids, boolean enabled) throws ProxyException {
         try {
             if (enabled) {
-                clientApi.ascan.enableScanners(ids);
+                clientApi.ascan.enableScanners(apiKey,ids);
             } else {
-                clientApi.ascan.disableScanners(ids);
+                clientApi.ascan.disableScanners(apiKey,ids);
             }
         } catch (ClientApiException e) {
             e.printStackTrace();
@@ -98,8 +105,8 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void disableAllScanners() throws ProxyException {
         try {
-            clientApi.pscan.setEnabled("false");
-            clientApi.ascan.disableAllScanners();
+            clientApi.pscan.setEnabled(apiKey,"false");
+            clientApi.ascan.disableAllScanners(apiKey);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -109,7 +116,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void setEnablePassiveScan(boolean enabled) throws ProxyException {
         try {
-            clientApi.pscan.setEnabled(Boolean.toString(enabled));
+            clientApi.pscan.setEnabled(apiKey,Boolean.toString(enabled));
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -140,7 +147,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public void scan(String url) throws ProxyException {
          try {
-            clientApi.ascan.scan(url, "true", "false");
+            clientApi.ascan.scan(apiKey,url, "true", "false");
          } catch (ClientApiException e) {
              e.printStackTrace();
              throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -158,7 +165,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public void clear() throws ProxyException {
         try {
-            clientApi.core.newSession("", "true");
+            clientApi.core.newSession("","","");
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -171,7 +178,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public List<HarEntry> getHistory(int start, int count) throws ProxyException {
         try {
-            return ClientApiUtils.getHarEntries(clientApi.core.messagesHar("", Integer.toString(start), Integer.toString(count)));
+            return ClientApiUtils.getHarEntries(clientApi.core.messagesHar(apiKey,"", Integer.toString(start), Integer.toString(count)));
         } catch (ClientApiException e) {
             e.printStackTrace();
 
@@ -191,7 +198,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public List<HarEntry> findInRequestHistory(String regex) throws ProxyException {
         try {
-            return ClientApiUtils.getHarEntries(clientApi.search.harByRequestRegex(regex, "", "-1", "-1"));
+            return ClientApiUtils.getHarEntries(clientApi.search.harByRequestRegex(apiKey,regex, "", "-1", "-1"));
         } catch (ClientApiException e) {
             e.printStackTrace();
 
@@ -201,7 +208,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public List<HarEntry> findInResponseHistory(String regex) throws ProxyException {
         try {
-            return ClientApiUtils.getHarEntries(clientApi.search.harByResponseRegex(regex, "", "-1", "-1"));
+            return ClientApiUtils.getHarEntries(clientApi.search.harByResponseRegex(apiKey,regex, "", "-1", "-1"));
         } catch (ClientApiException e) {
             e.printStackTrace();
 
@@ -212,7 +219,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     public List<HarEntry> makeRequest(HarRequest request, boolean followRedirect) throws ProxyException {
         try {
             String harRequestStr = ClientApiUtils.convertHarRequestToString(request);
-            return ClientApiUtils.getHarEntries(clientApi.core.sendHarRequest(harRequestStr, Boolean.toString(followRedirect)));
+            return ClientApiUtils.getHarEntries(clientApi.core.sendHarRequest(apiKey,harRequestStr, Boolean.toString(followRedirect)));
         } catch (ClientApiException e) {
             e.printStackTrace();
 
@@ -244,7 +251,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void spider(String url) {
         try {
-            clientApi.spider.scan(url);
+            clientApi.spider.scan(apiKey,url);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -254,7 +261,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void excludeFromScan(String regex) {
         try {
-            clientApi.spider.excludeFromScan(regex);
+            clientApi.spider.excludeFromScan(apiKey,regex);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -264,7 +271,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void setMaxDepth(int depth) {
         try {
-            clientApi.spider.setOptionMaxDepth(depth);
+            clientApi.spider.setOptionMaxDepth(apiKey,depth);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -274,7 +281,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void setPostForms(boolean post) {
         try {
-            clientApi.spider.setOptionPostForm(post);
+            clientApi.spider.setOptionPostForm(apiKey,post);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -284,7 +291,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void setThreadCount(int threads) {
         try {
-            clientApi.spider.setOptionThreadCount(threads);
+            clientApi.spider.setOptionThreadCount(apiKey,threads);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);

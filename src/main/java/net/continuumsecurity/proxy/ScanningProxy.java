@@ -33,6 +33,8 @@ public interface ScanningProxy extends LoggingProxy {
 
     public void setEnableScanners(String ids, boolean enabled) throws ProxyException;
 
+    public void setAttackStrength(String strength) throws ProxyException;
+
     public void disableAllScanners() throws ProxyException;
 
     public void setEnablePassiveScan(boolean enabled) throws ProxyException;

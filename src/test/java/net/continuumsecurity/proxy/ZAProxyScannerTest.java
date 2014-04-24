@@ -28,7 +28,7 @@ public class ZAProxyScannerTest {
 
     @BeforeClass
     public static void configure() throws Exception {
-        zaproxy = new ZAProxyScanner(HOST, PORT);
+        zaproxy = new ZAProxyScanner(HOST, PORT,"");
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(CapabilityType.PROXY, zaproxy.getSeleniumProxy());
 
