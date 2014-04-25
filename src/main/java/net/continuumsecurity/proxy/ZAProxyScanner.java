@@ -79,9 +79,19 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     }
 
     @Override
-    public void setAttackStrength(String strength) throws ProxyException {
+    public void setScannerAttackStrength(String scannerId, String strength) throws ProxyException {
         try {
-            clientApi.ascan.setOptionAttackStrength(apiKey,strength);
+            clientApi.ascan.setScannerAttackStrength(apiKey, scannerId, strength);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred for setScannerAttackStrength", e);
+        }
+    }
+
+    @Override
+    public void setScannerAlertThreshold(String scannerId, String threshold) throws ProxyException {
+        try {
+            clientApi.ascan.setScannerAlertThreshold(apiKey, scannerId, threshold);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);
@@ -165,7 +175,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public void clear() throws ProxyException {
         try {
-            clientApi.core.newSession("","","");
+            clientApi.core.newSession(apiKey,"","");
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);

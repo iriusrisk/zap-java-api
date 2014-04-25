@@ -31,9 +31,11 @@ public interface ScanningProxy extends LoggingProxy {
      */
     public int getScanStatus() throws ProxyException;
 
-    public void setEnableScanners(String ids, boolean enabled) throws ProxyException;
+    void setScannerAttackStrength(String scannerId, String strength) throws ProxyException;
 
-    public void setAttackStrength(String strength) throws ProxyException;
+    void setScannerAlertThreshold(String scannerId, String threshold) throws ProxyException;
+
+    public void setEnableScanners(String ids, boolean enabled) throws ProxyException;
 
     public void disableAllScanners() throws ProxyException;
 
