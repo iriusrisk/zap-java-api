@@ -7,6 +7,7 @@ import edu.umass.cs.benchlab.har.HarResponse;
 import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -21,15 +22,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.thoughtworks.selenium.SeleneseTestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 
 public class ZAProxyScannerTest {
     static WebDriver driver;
     static ZAProxyScanner zaproxy;
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
-    static String CHROME = "src/test/resources/chromedriver";
+    static String CHROME = "src/test/resources/chromedriver-mac";
     static String BASEURL = "http://localhost:9090/";
 
     @BeforeClass
@@ -38,8 +41,8 @@ public class ZAProxyScannerTest {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(CapabilityType.PROXY, zaproxy.getSeleniumProxy());
 
-        //System.setProperty("webdriver.chrome.driver", CHROME);
-        driver = new FirefoxDriver(capabilities);
+        System.setProperty("webdriver.chrome.driver", CHROME);
+        driver = new ChromeDriver(capabilities);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
     }
@@ -59,7 +62,7 @@ public class ZAProxyScannerTest {
     public void testGetHistory() throws ProxyException {
         driver.get(BASEURL);
         List<HarEntry> history = zaproxy.getHistory();
-        assertTrue(history.size() > 1); //should redirect to login
+        assertThat(history.size(), greaterThan(0));
         Assert.assertEquals(history.get(0).getResponse().getStatus(), 302);
     }
 
@@ -95,7 +98,26 @@ public class ZAProxyScannerTest {
 
         List<HarEntry> responses = zaproxy.makeRequest(copy, true);
         //The changed session ID
-        assertEquals("nothing", responses.get(0).getRequest().getCookies().getCookies().get(0).getValue());
+        assertThat(responses.get(0).getRequest().getCookies().getCookies().get(0).getValue(), equalTo("nothing"));
+    }
+
+    @Test
+    public void testSimpleScan() throws InterruptedException {
+        System.out.println("Opening login page");
+        openLoginPage();
+        System.out.println("Logging on");
+
+        login("bob", "password");
+        zaproxy.setEnableScanners("40018",true);
+        zaproxy.scan(BASEURL);
+        int status = zaproxy.getScanStatus();
+        while (status < 100) {
+            Thread.sleep(2000);
+            status = zaproxy.getScanStatus();
+            System.out.println("Scan: "+status);
+        }
+        List<Alert> alerts = zaproxy.getAlerts();
+        assertThat(alerts.size(), greaterThan(0));
     }
 
 
