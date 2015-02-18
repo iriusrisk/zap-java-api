@@ -269,9 +269,19 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     }
 
     @Override
-    public void excludeFromScan(String regex) {
+    public void excludeFromSpider(String regex) {
         try {
             clientApi.spider.excludeFromScan(apiKey,regex);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException("Error occurred while accessing ZAP.", e);
+        }
+    }
+
+    @Override
+    public void excludeFromScanner(String regex) {
+        try {
+            clientApi.ascan.excludeFromScan(apiKey, regex);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException("Error occurred while accessing ZAP.", e);

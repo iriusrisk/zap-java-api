@@ -40,4 +40,6 @@ public interface ScanningProxy extends LoggingProxy {
     public void disableAllScanners() throws ProxyException;
 
     public void setEnablePassiveScan(boolean enabled) throws ProxyException;
+
+    public void excludeFromScanner(String regex) throws ProxyException;
 }
