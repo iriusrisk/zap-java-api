@@ -4,6 +4,7 @@ import edu.umass.cs.benchlab.har.HarEntry;
 import edu.umass.cs.benchlab.har.HarLog;
 import edu.umass.cs.benchlab.har.HarRequest;
 import edu.umass.cs.benchlab.har.tools.HarFileReader;
+import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.openqa.selenium.Proxy;
@@ -205,6 +206,21 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
             throw new ProxyException("Error occurred while accessing ZAP.", e);
         }
     }
+
+    public List<HarEntry> findInResponseHistory(String regex,List<HarEntry> entries) {
+        List<HarEntry> found = new ArrayList<HarEntry>();
+        for (HarEntry entry : entries) {
+            String content = entry.getResponse().getContent().getText();
+            if (entry.getResponse().getContent().getEncoding().equalsIgnoreCase("base64")) {
+                content = new String(Base64.decodeBase64(content));
+            }
+            if (content.contains(regex)) {
+                found.add(entry);
+            }
+        }
+        return found;
+    }
+
 
     public List<HarEntry> findInRequestHistory(String regex) throws ProxyException {
         try {
