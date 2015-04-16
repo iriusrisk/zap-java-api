@@ -21,6 +21,7 @@ public interface ScanningProxy extends LoggingProxy {
      */
     int getAlertsCount() throws ProxyException;
 
+    public void deleteAlerts() throws ProxyException;
     /*
         Perform an active scan of everything that was logged by the proxy
      */
@@ -29,7 +30,9 @@ public interface ScanningProxy extends LoggingProxy {
     /*
         Return the percentage completion of the current scan
      */
-    public int getScanStatus() throws ProxyException;
+    public int getScanProgress(int scanId) throws ProxyException;
+
+    public int getLastScannerScanId() throws ProxyException;
 
     void setScannerAttackStrength(String scannerId, String strength) throws ProxyException;
 
@@ -38,6 +41,8 @@ public interface ScanningProxy extends LoggingProxy {
     public void setEnableScanners(String ids, boolean enabled) throws ProxyException;
 
     public void disableAllScanners() throws ProxyException;
+
+    public void enableAllScanners() throws ProxyException;
 
     public void setEnablePassiveScan(boolean enabled) throws ProxyException;
 

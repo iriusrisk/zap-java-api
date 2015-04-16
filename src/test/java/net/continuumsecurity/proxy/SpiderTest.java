@@ -21,16 +21,16 @@ public class SpiderTest {
         zaproxy.spider(BASEURL);
         int progress = 0;
         while (progress < 100) {
-            progress = zaproxy.getSpiderStatus();
+            progress = zaproxy.getSpiderProgress(zaproxy.getLastSpiderScanId());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
-        List<String> results = zaproxy.getSpiderResults();
+        List<String> results = zaproxy.getSpiderResults(zaproxy.getLastSpiderScanId());
 
-        assert 1 == results.size();
+        assert 2 == results.size();
         assert results.contains(BASEURL);
         for (String url : results) {
            System.out.println(url);

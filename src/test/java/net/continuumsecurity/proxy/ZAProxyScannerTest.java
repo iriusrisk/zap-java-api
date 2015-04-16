@@ -102,22 +102,39 @@ public class ZAProxyScannerTest {
     }
 
     @Test
-    public void testSimpleScan() throws InterruptedException {
+    public void testSimpleActiveScanWorkflow() throws InterruptedException {
+        zaproxy.setEnablePassiveScan(false);
         System.out.println("Opening login page");
         openLoginPage();
         System.out.println("Logging on");
 
         login("bob", "password");
         zaproxy.setEnableScanners("40018",true);
+        zaproxy.deleteAlerts();
         zaproxy.scan(BASEURL);
-        int status = zaproxy.getScanStatus();
+        int scanId = zaproxy.getLastScannerScanId();
+        int status = zaproxy.getScanProgress(scanId);
         while (status < 100) {
             Thread.sleep(2000);
-            status = zaproxy.getScanStatus();
+            status = zaproxy.getScanProgress(scanId);
             System.out.println("Scan: "+status);
         }
         List<Alert> alerts = zaproxy.getAlerts();
         assertThat(alerts.size(), greaterThan(0));
+
+        //Repeat after deleting alerts
+        zaproxy.deleteAlerts();
+        zaproxy.scan(BASEURL);
+        scanId = zaproxy.getLastScannerScanId();
+        status = zaproxy.getScanProgress(scanId);
+        while (status < 100) {
+            Thread.sleep(2000);
+            status = zaproxy.getScanProgress(scanId);
+            System.out.println("Scan: "+status);
+        }
+        List<Alert> secondBatchAlerts = zaproxy.getAlerts();
+        assertThat(secondBatchAlerts.size(), greaterThan(0));
+        assertThat(secondBatchAlerts.size(), equalTo(alerts.size()));
     }
 
 

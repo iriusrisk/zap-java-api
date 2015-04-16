@@ -42,6 +42,7 @@ public interface LoggingProxy {
      */
 	List<HarEntry> findInResponseHistory(String regex) throws ProxyException;
 
+    List<HarEntry> findInResponseHistory(String regex,List<HarEntry> entries);
     /*
        Make a request using the HarRequest data and follow redirects if specified.  Return all the resulting request/responses.
      */
