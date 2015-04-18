@@ -59,6 +59,13 @@ public class ZAProxyScannerTest {
     }
 
     @Test
+    public void testGetXmlReport() throws ProxyException {
+        String report = zaproxy.getXmlReport();
+        assert report.startsWith("<?xml version=\"1.0\"");
+        assert report.endsWith("</OWASPZAPReport>");
+    }
+
+    @Test
     public void testGetHistory() throws ProxyException {
         driver.get(BASEURL);
         List<HarEntry> history = zaproxy.getHistory();
