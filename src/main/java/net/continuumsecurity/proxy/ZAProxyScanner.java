@@ -154,7 +154,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public void deleteAlerts() throws ProxyException {
         try {
-            clientApi.core.deleteAllAlerts(null);
+            clientApi.core.deleteAllAlerts(apiKey);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException(e);
