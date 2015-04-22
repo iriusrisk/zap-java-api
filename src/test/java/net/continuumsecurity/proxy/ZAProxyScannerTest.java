@@ -60,7 +60,7 @@ public class ZAProxyScannerTest {
 
     @Test
     public void testGetXmlReport() throws ProxyException {
-        String report = zaproxy.getXmlReport();
+        String report = new String(zaproxy.getXmlReport());
         assert report.startsWith("<?xml version=\"1.0\"");
         assert report.endsWith("</OWASPZAPReport>");
     }

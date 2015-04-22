@@ -209,7 +209,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
 
     public void clear() throws ProxyException {
         try {
-            clientApi.ascan.removeAllScans(null);
+            clientApi.ascan.removeAllScans(apiKey);
             clientApi.core.newSession(apiKey,"","");
         } catch (ClientApiException e) {
             e.printStackTrace();
