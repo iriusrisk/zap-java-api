@@ -36,6 +36,8 @@ public interface ScanningProxy extends LoggingProxy {
 
     public byte[] getXmlReport() throws ProxyException;
 
+    public byte[] getHtmlReport() throws ProxyException;
+
     void setScannerAttackStrength(String scannerId, String strength) throws ProxyException;
 
     void setScannerAlertThreshold(String scannerId, String threshold) throws ProxyException;
