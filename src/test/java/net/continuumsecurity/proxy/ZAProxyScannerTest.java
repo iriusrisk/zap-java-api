@@ -8,7 +8,6 @@ import org.junit.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.zaproxy.clientapi.core.Alert;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -63,6 +61,13 @@ public class ZAProxyScannerTest {
         String report = new String(zaproxy.getXmlReport());
         assert report.startsWith("<?xml version=\"1.0\"");
         assert report.endsWith("</OWASPZAPReport>");
+    }
+
+    @Test
+    public void testGetHtmlReport() throws ProxyException {
+        String report = new String(zaproxy.getHtmlReport()).trim();
+        assert report.startsWith("<html>");
+        assert report.endsWith("</html>");
     }
 
     @Test

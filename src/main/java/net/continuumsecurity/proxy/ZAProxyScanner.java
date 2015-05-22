@@ -170,6 +170,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
         }
     }
 
+    @Override
+    public byte[] getHtmlReport() throws ProxyException {
+        try {
+            return clientApi.core.htmlreport(apiKey);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
     public List<Alert> getAlerts(int start, int count) throws ProxyException {
         try {
             return clientApi.getAlerts("", start, count);
