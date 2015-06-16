@@ -51,4 +51,10 @@ public interface ScanningProxy extends LoggingProxy {
     public void setEnablePassiveScan(boolean enabled) throws ProxyException;
 
     public void excludeFromScanner(String regex) throws ProxyException;
+
+    /**
+     * Shuts down ZAP.
+     * @throws ProxyException
+     */
+    public void shutdown() throws ProxyException;
 }

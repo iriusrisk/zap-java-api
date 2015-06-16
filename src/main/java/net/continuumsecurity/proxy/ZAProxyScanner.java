@@ -472,4 +472,18 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
         }
 
     }
+
+    /**
+     * Shuts down ZAP.
+     * @throws ProxyException
+     */
+    @Override
+    public void shutdown() {
+        try {
+            clientApi.core.shutdown(apiKey);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
 }
