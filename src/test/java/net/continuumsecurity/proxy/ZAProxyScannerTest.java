@@ -19,7 +19,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.zaproxy.clientapi.core.Alert;
-import org.zaproxy.clientapi.core.ClientApiException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -75,7 +74,7 @@ public class ZAProxyScannerTest {
     }
 
     @Test
-    public void testContext() throws ClientApiException, IOException {
+    public void testContext() throws ProxyException, IOException {
         List<String> contexts = zaproxy.getContexts();
         int numberOfContexts = contexts.size();
 
@@ -109,7 +108,7 @@ public class ZAProxyScannerTest {
     }
 
     @Test
-    public void testAuthentication() throws ClientApiException, IOException {
+    public void testAuthentication() throws ProxyException, IOException {
         String contextName = TEST_CONTEXT_NAME + " - " + RandomStringUtils.randomAlphanumeric(3);
         zaproxy.createContext(contextName, true);
         String contextId = zaproxy.getContextInfo(contextName).getId();
@@ -212,7 +211,7 @@ public class ZAProxyScannerTest {
     }
 
     @Test
-    public void testAntiCsrfTokenMethods() throws ClientApiException {
+    public void testAntiCsrfTokenMethods() throws ProxyException {
         List<String> antiCsrfTokens = zaproxy.getAntiCsrfTokenNames();
         String aCsrfTokenName = "secureToken";
         zaproxy.addAntiCsrfToken(aCsrfTokenName);

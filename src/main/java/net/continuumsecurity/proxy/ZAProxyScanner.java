@@ -35,7 +35,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
     Logger log = Logger.getLogger(ZAProxyScanner.class.getName());
 
 
-    public ZAProxyScanner(String host, int port, String apiKey) throws IllegalArgumentException, ClientApiException, ProxyException {
+    public ZAProxyScanner(String host, int port, String apiKey) throws IllegalArgumentException, ProxyException {
         validateHost(host);
         validatePort(port);
         this.apiKey = apiKey;
@@ -452,12 +452,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @param inScope     true to set context in scope.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void createContext(String contextName, boolean inScope) throws ClientApiException {
-        clientApi.context.newContext(apiKey, contextName);
-        clientApi.context.setContextInScope(apiKey, contextName, String.valueOf(inScope));
+    public void createContext(String contextName, boolean inScope) throws ProxyException {
+        try {
+            clientApi.context.newContext(apiKey, contextName);
+            clientApi.context.setContextInScope(apiKey, contextName, String.valueOf(inScope));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -465,11 +470,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @param regex       URL to include in context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void includeRegexInContext(String contextName, Pattern regex) throws ClientApiException {
-        clientApi.context.includeInContext(apiKey, contextName, Pattern.quote(regex.pattern()));
+    public void includeRegexInContext(String contextName, Pattern regex) throws ProxyException {
+        try {
+            clientApi.context.includeInContext(apiKey, contextName, Pattern.quote(regex.pattern()));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -477,12 +487,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @param parentUrl   Parent URL to include in context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void includeUrlTreeInContext(String contextName, String parentUrl) throws ClientApiException {
+    public void includeUrlTreeInContext(String contextName, String parentUrl) throws ProxyException {
         Pattern pattern = Pattern.compile(parentUrl);
-        clientApi.context.includeInContext(apiKey, contextName, Pattern.quote(pattern.pattern()) + ".*");
+        try {
+            clientApi.context.includeInContext(apiKey, contextName, Pattern.quote(pattern.pattern()) + ".*");
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -490,11 +505,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @param regex       Regex to exclude from context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void excludeRegexFromContext(String contextName, Pattern regex) throws ClientApiException {
-        clientApi.context.excludeFromContext(apiKey, contextName, Pattern.quote(regex.pattern()));
+    public void excludeRegexFromContext(String contextName, Pattern regex) throws ProxyException {
+        try {
+            clientApi.context.excludeFromContext(apiKey, contextName, Pattern.quote(regex.pattern()));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -502,12 +522,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @param parentUrl   Parent URL to exclude from context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void excludeParentUrlFromContext(String contextName, String parentUrl) throws ClientApiException {
+    public void excludeParentUrlFromContext(String contextName, String parentUrl) throws ProxyException {
         Pattern pattern = Pattern.compile(parentUrl);
-        clientApi.context.excludeFromContext(apiKey, contextName, Pattern.quote(pattern.pattern()) + ".*");
+        try {
+            clientApi.context.excludeFromContext(apiKey, contextName, Pattern.quote(pattern.pattern()) + ".*");
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -515,11 +540,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of context.
      * @return Context details for the given context
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public Context getContextInfo(String contextName) throws ClientApiException {
-        Context context = new Context((ApiResponseSet) clientApi.context.context(contextName));
+    public Context getContextInfo(String contextName) throws ProxyException {
+        Context context;
+        try {
+            context = new Context((ApiResponseSet) clientApi.context.context(contextName));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         return context;
     }
 
@@ -527,10 +558,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * Returns list of context names.
      *
      * @return List of context names.
+     * @throws ProxyException
      */
     @Override
-    public List<String> getContexts() throws ClientApiException {
-        String contexts = ((ApiResponseElement) clientApi.context.contextList()).getValue();
+    public List<String> getContexts() throws ProxyException {
+        String contexts = null;
+        try {
+            contexts = ((ApiResponseElement) clientApi.context.contextList()).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         return Arrays.asList(contexts.substring(1, contexts.length() - 1).split(", "));
     }
 
@@ -539,11 +577,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @param inScope     true - Sets the context in scope. false - Sets the context out of scope.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setContextInScope(String contextName, boolean inScope) throws ClientApiException {
-        clientApi.context.setContextInScope(apiKey, contextName, String.valueOf(inScope));
+    public void setContextInScope(String contextName, boolean inScope) throws ProxyException {
+        try {
+            clientApi.context.setContextInScope(apiKey, contextName, String.valueOf(inScope));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -551,14 +594,20 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @return List of include regexs.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public List<String> getIncludedRegexs(String contextName) throws ClientApiException {
-        String includedRegexs = ((ApiResponseElement) clientApi.context.includeRegexs(contextName)).getValue();
-        if (includedRegexs.length() > 2) {
-            return Arrays.asList(includedRegexs.substring(1, includedRegexs.length() - 1).split(", "));
+    public List<String> getIncludedRegexs(String contextName) throws ProxyException {
+        String includedRegexs;
+        try {
+            includedRegexs = ((ApiResponseElement) clientApi.context.includeRegexs(contextName)).getValue();
+            if (includedRegexs.length() > 2) {
+                return Arrays.asList(includedRegexs.substring(1, includedRegexs.length() - 1).split(", "));
+            }
+        } catch (ClientApiException e) {
+            throw new ProxyException(e);
         }
+
         return null;
     }
 
@@ -567,11 +616,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextName Name of the context.
      * @return List of exclude regexs.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public List<String> getExcludedRegexs(String contextName) throws ClientApiException {
-        String excludedRegexs = ((ApiResponseElement) clientApi.context.excludeRegexs(contextName)).getValue();
+    public List<String> getExcludedRegexs(String contextName) throws ProxyException {
+        String excludedRegexs = null;
+        try {
+            excludedRegexs = ((ApiResponseElement) clientApi.context.excludeRegexs(contextName)).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         if (excludedRegexs.length() > 2) {
             return Arrays.asList(excludedRegexs.substring(1, excludedRegexs.length() - 1).split(", "));
         }
@@ -582,11 +637,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * Returns the supported authentication methods by ZAP.
      *
      * @return list of supported authentication methods.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public List<String> getSupportedAuthenticationMethods() throws ClientApiException {
-        ApiResponseList apiResponseList = (ApiResponseList) clientApi.authentication.getSupportedAuthenticationMethods();
+    public List<String> getSupportedAuthenticationMethods() throws ProxyException {
+        ApiResponseList apiResponseList = null;
+        try {
+            apiResponseList = (ApiResponseList) clientApi.authentication.getSupportedAuthenticationMethods();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         List<String> supportedAuthenticationMethods = new ArrayList<String>();
         for (ApiResponse apiResponse : apiResponseList.getItems()) {
             supportedAuthenticationMethods.add(((ApiResponseElement) apiResponse).getValue());
@@ -599,11 +660,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextId Id of the context.
      * @return Logged in indicator for the given context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public String getLoggedInIndicator(String contextId) throws ClientApiException {
-        return ((ApiResponseElement) clientApi.authentication.getLoggedInIndicator(contextId)).getValue();
+    public String getLoggedInIndicator(String contextId) throws ProxyException {
+        try {
+            return ((ApiResponseElement) clientApi.authentication.getLoggedInIndicator(contextId)).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -611,11 +677,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextId Id of the context.
      * @return Logged out indicator for the given context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public String getLoggedOutIndicator(String contextId) throws ClientApiException {
-        return ((ApiResponseElement) clientApi.authentication.getLoggedOutIndicator(contextId)).getValue();
+    public String getLoggedOutIndicator(String contextId) throws ProxyException {
+        try {
+            return ((ApiResponseElement) clientApi.authentication.getLoggedOutIndicator(contextId)).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -623,11 +694,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextId              Id of a context.
      * @param loggedInIndicatorRegex Regex pattern for logged in indicator.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setLoggedInIndicator(String contextId, String loggedInIndicatorRegex) throws ClientApiException {
-        clientApi.authentication.setLoggedInIndicator(apiKey, contextId, Pattern.quote(loggedInIndicatorRegex));
+    public void setLoggedInIndicator(String contextId, String loggedInIndicatorRegex) throws ProxyException {
+        try {
+            clientApi.authentication.setLoggedInIndicator(apiKey, contextId, Pattern.quote(loggedInIndicatorRegex));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -635,11 +711,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextId               Id of a context.
      * @param loggedOutIndicatorRegex Regex pattern for logged out indicator.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setLoggedOutIndicator(String contextId, String loggedOutIndicatorRegex) throws ClientApiException {
-        clientApi.authentication.setLoggedOutIndicator(apiKey, contextId, Pattern.quote(loggedOutIndicatorRegex));
+    public void setLoggedOutIndicator(String contextId, String loggedOutIndicatorRegex) throws ProxyException {
+        try {
+            clientApi.authentication.setLoggedOutIndicator(apiKey, contextId, Pattern.quote(loggedOutIndicatorRegex));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -647,12 +728,18 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextId Id of a context.
      * @return Authentication method name for the given context id.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public Map<String, String> getAuthenticationMethodInfo(String contextId) throws ClientApiException {
+    public Map<String, String> getAuthenticationMethodInfo(String contextId) throws ProxyException {
         Map<String, String> authenticationMethodDetails = new HashMap<String, String>();
-        ApiResponse apiResponse = clientApi.authentication.getAuthenticationMethod(contextId);
+        ApiResponse apiResponse = null;
+        try {
+            apiResponse = clientApi.authentication.getAuthenticationMethod(contextId);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         if (apiResponse instanceof ApiResponseElement) {
             authenticationMethodDetails.put("methodName", ((ApiResponseElement) apiResponse).getValue());
         } else if (apiResponse instanceof ApiResponseSet) {
@@ -686,10 +773,15 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param contextId Id of a context.
      * @return Authentication method info as a String.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
-    public String getAuthenticationMethod(String contextId) throws ClientApiException {
-        return clientApi.authentication.getAuthenticationMethod(contextId).toString(0);
+    public String getAuthenticationMethod(String contextId) throws ProxyException {
+        try {
+            return clientApi.authentication.getAuthenticationMethod(contextId).toString(0);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -698,11 +790,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      *
      * @param authMethod Valid authentication method name.
      * @return List of configuration parameters for the given authentication method name.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public List<Map<String, String>> getAuthMethodConfigParameters(String authMethod) throws ClientApiException {
-        ApiResponseList apiResponseList = (ApiResponseList) clientApi.authentication.getAuthenticationMethodConfigParams(authMethod);
+    public List<Map<String, String>> getAuthMethodConfigParameters(String authMethod) throws ProxyException {
+        ApiResponseList apiResponseList = null;
+        try {
+            apiResponseList = (ApiResponseList) clientApi.authentication.getAuthenticationMethodConfigParams(authMethod);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         return getConfigParams(apiResponseList);
     }
 
@@ -731,11 +829,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId              Id of a context.
      * @param authMethodName         Valid authentication method name.
      * @param authMethodConfigParams Authentication method configuration parameters such as loginUrl, loginRequestData formBasedAuthentication method, and hostName, port, realm for httpBasedAuthentication method.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setAuthenticationMethod(String contextId, String authMethodName, String authMethodConfigParams) throws ClientApiException {
-        clientApi.authentication.setAuthenticationMethod(apiKey, contextId, authMethodName, authMethodConfigParams);
+    public void setAuthenticationMethod(String contextId, String authMethodName, String authMethodConfigParams) throws ProxyException {
+        try {
+            clientApi.authentication.setAuthenticationMethod(apiKey, contextId, authMethodName, authMethodConfigParams);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -745,11 +848,11 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId        Id of the context.
      * @param loginUrl         Login URL.
      * @param loginRequestData Login request data with form field names for username and password.
-     * @throws ClientApiException
+     * @throws ProxyException
      * @throws UnsupportedEncodingException
      */
     @Override
-    public void setFormBasedAuthentication(String contextId, String loginUrl, String loginRequestData) throws ClientApiException, UnsupportedEncodingException {
+    public void setFormBasedAuthentication(String contextId, String loginUrl, String loginRequestData) throws ProxyException, UnsupportedEncodingException {
         setAuthenticationMethod(contextId, AuthenticationMethod.FORM_BASED_AUTHENTICATION.getValue(), "loginUrl=" + URLEncoder.encode(loginUrl, "UTF-8") + "&loginRequestData=" + URLEncoder.encode(loginRequestData, "UTF-8"));
     }
 
@@ -760,10 +863,10 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param hostname   Hostname.
      * @param realm      Realm.
      * @param portNumber Port number.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setHttpAuthentication(String contextId, String hostname, String realm, String portNumber) throws ClientApiException, UnsupportedEncodingException {
+    public void setHttpAuthentication(String contextId, String hostname, String realm, String portNumber) throws ProxyException, UnsupportedEncodingException {
         if (StringUtils.isNotEmpty(portNumber)) {
             setAuthenticationMethod(contextId, AuthenticationMethod.HTTP_AUTHENTICATION.getValue(), "hostname=" + URLEncoder.encode(hostname, "UTF-8") + "&realm=" + URLEncoder.encode(realm, "UTF-8") + "&port=" + URLEncoder.encode(portNumber, "UTF-8"));
         } else {
@@ -777,10 +880,10 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId Id of the context.
      * @param hostname  Hostname.
      * @param realm     Realm.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setHttpAuthentication(String contextId, String hostname, String realm) throws ClientApiException, UnsupportedEncodingException {
+    public void setHttpAuthentication(String contextId, String hostname, String realm) throws ProxyException, UnsupportedEncodingException {
         setAuthenticationMethod(contextId, AuthenticationMethod.HTTP_AUTHENTICATION.getValue(), "hostname=" + URLEncoder.encode(hostname, "UTF-8") + "&realm=" + URLEncoder.encode(realm, "UTF-8"));
     }
 
@@ -788,10 +891,10 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * Sets the manual authentication to the given context id.
      *
      * @param contextId Id of the context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setManualAuthentication(String contextId) throws ClientApiException {
+    public void setManualAuthentication(String contextId) throws ProxyException {
         setAuthenticationMethod(contextId, AuthenticationMethod.MANUAL_AUTHENTICATION.getValue(), null);
     }
 
@@ -801,10 +904,10 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId          Id of the context.
      * @param scriptName         Name of the script.
      * @param scriptConfigParams Script config parameters.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setScriptBasedAuthentication(String contextId, String scriptName, String scriptConfigParams) throws ClientApiException, UnsupportedEncodingException {
+    public void setScriptBasedAuthentication(String contextId, String scriptName, String scriptConfigParams) throws ProxyException, UnsupportedEncodingException {
         setAuthenticationMethod(contextId, AuthenticationMethod.SCRIPT_BASED_AUTHENTICATION.getValue(), "scriptName=" + URLEncoder.encode(scriptName, "UTF-8") + "&scriptConfigParams=" + URLEncoder.encode(scriptConfigParams, "UTF-8"));
     }
 
@@ -812,12 +915,18 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * Returns list of {@link User}s for a given context.
      * @param contextId Id of the context.
      * @return List of {@link User}s
-     * @throws ClientApiException
+     * @throws ProxyException
      * @throws IOException
      */
     @Override
-    public List<User> getUsersList(String contextId) throws ClientApiException, IOException {
-        ApiResponseList apiResponseList = (ApiResponseList) clientApi.users.usersList(contextId);
+    public List<User> getUsersList(String contextId) throws ProxyException, IOException {
+        ApiResponseList apiResponseList = null;
+        try {
+            apiResponseList = (ApiResponseList) clientApi.users.usersList(contextId);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         List<User> users = new ArrayList<User>();
         if (apiResponseList != null) {
             for (ApiResponse apiResponse : apiResponseList.getItems()) {
@@ -832,12 +941,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId Id of a context.
      * @param userId Id of a user.
      * @return {@link User} info.
-     * @throws ClientApiException
+     * @throws ProxyException
      * @throws IOException
      */
     @Override
-    public User getUserById(String contextId, String userId) throws ClientApiException, IOException {
-        return new User((ApiResponseSet) clientApi.users.getUserById(contextId, userId));
+    public User getUserById(String contextId, String userId) throws ProxyException, IOException {
+        try {
+            return new User((ApiResponseSet) clientApi.users.getUserById(contextId, userId));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -845,11 +959,17 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * Each item in the list is a map with keys "name" and "mandatory".
      * @param contextId Id of a context.
      * @return List of authentication credentials configuration parameters.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public List<Map<String, String>> getAuthenticationCredentialsConfigParams(String contextId) throws ClientApiException {
-        ApiResponseList apiResponseList = (ApiResponseList) clientApi.users.getAuthenticationCredentialsConfigParams(contextId);
+    public List<Map<String, String>> getAuthenticationCredentialsConfigParams(String contextId) throws ProxyException {
+        ApiResponseList apiResponseList = null;
+        try {
+            apiResponseList = (ApiResponseList) clientApi.users.getAuthenticationCredentialsConfigParams(contextId);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         return getConfigParams(apiResponseList);
     }
 
@@ -858,12 +978,18 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId Id of a context.
      * @param userId Id of a user.
      * @return Authentication credentials.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public Map<String, String> getAuthenticationCredentials(String contextId, String userId) throws ClientApiException {
+    public Map<String, String> getAuthenticationCredentials(String contextId, String userId) throws ProxyException {
         Map<String, String> credentials = new HashMap<String, String>();
-        ApiResponseSet apiResponseSet = (ApiResponseSet) clientApi.users.getAuthenticationCredentials(contextId, userId);
+        ApiResponseSet apiResponseSet = null;
+        try {
+            apiResponseSet = (ApiResponseSet) clientApi.users.getAuthenticationCredentials(contextId, userId);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
 
         String type = apiResponseSet.getAttribute("type");
         credentials.put("type", type);
@@ -890,8 +1016,13 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
         return credentials;
     }
 
-    public String getAuthCredentials(String contextId, String userId) throws ClientApiException {
-        return clientApi.users.getAuthenticationCredentials(contextId, userId).toString(0);
+    public String getAuthCredentials(String contextId, String userId) throws ProxyException {
+        try {
+            return clientApi.users.getAuthenticationCredentials(contextId, userId).toString(0);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -899,22 +1030,32 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId Id of a context.
      * @param name Name of the user.
      * @return User id.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public String newUser(String contextId, String name) throws ClientApiException {
-        return ((ApiResponseElement) clientApi.users.newUser(apiKey, contextId, name)).getValue();
+    public String newUser(String contextId, String name) throws ProxyException {
+        try {
+            return ((ApiResponseElement) clientApi.users.newUser(apiKey, contextId, name)).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Removes a {@link User} using the given context id and user id.
      * @param contextId Id of a {@link net.continuumsecurity.proxy.model.Context}
      * @param userId Id of a {@link User}
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void removeUser(String contextId, String userId) throws ClientApiException {
-        clientApi.users.removeUser(apiKey, contextId, userId);
+    public void removeUser(String contextId, String userId) throws ProxyException {
+        try {
+            clientApi.users.removeUser(apiKey, contextId, userId);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -925,11 +1066,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId                   Id of the context.
      * @param userId                      Id of the user.
      * @param authCredentialsConfigParams Authentication credentials config parameters.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setAuthenticationCredentials(String contextId, String userId, String authCredentialsConfigParams) throws ClientApiException {
-        clientApi.users.setAuthenticationCredentials(apiKey, contextId, userId, authCredentialsConfigParams);
+    public void setAuthenticationCredentials(String contextId, String userId, String authCredentialsConfigParams) throws ProxyException {
+        try {
+            clientApi.users.setAuthenticationCredentials(apiKey, contextId, userId, authCredentialsConfigParams);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -937,11 +1083,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId Id of a {@link net.continuumsecurity.proxy.model.Context}
      * @param userId Id of a {@link User}
      * @param enabled Boolean value to enable/disable the user.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setUserEnabled(String contextId, String userId, boolean enabled) throws ClientApiException {
-        clientApi.users.setUserEnabled(apiKey, contextId, userId, Boolean.toString(enabled));
+    public void setUserEnabled(String contextId, String userId, boolean enabled) throws ProxyException {
+        try {
+            clientApi.users.setUserEnabled(apiKey, contextId, userId, Boolean.toString(enabled));
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -949,63 +1100,94 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId Id of a {@link net.continuumsecurity.proxy.model.Context}
      * @param userId Id of a {@link User}
      * @param name User name.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setUserName(String contextId, String userId, String name) throws ClientApiException {
-        clientApi.users.setUserName(apiKey, contextId, userId, name);
+    public void setUserName(String contextId, String userId, String name) throws ProxyException {
+        try {
+            clientApi.users.setUserName(apiKey, contextId, userId, name);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Returns the forced user id for a given context.
      * @param contextId Id of a context.
      * @return Id of a forced {@link User}
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public String getForcedUserId(String contextId) throws ClientApiException {
-        return ((ApiResponseElement) clientApi.forcedUser.getForcedUser(contextId)).getValue();
+    public String getForcedUserId(String contextId) throws ProxyException {
+        try {
+            return ((ApiResponseElement) clientApi.forcedUser.getForcedUser(contextId)).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Returns true if forced user mode is enabled. Otherwise returns false.
      * @return true if forced user mode is enabled.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public boolean isForcedUserModeEnabled() throws ClientApiException {
-        return Boolean.parseBoolean(((ApiResponseElement) clientApi.forcedUser.isForcedUserModeEnabled()).getValue());
+    public boolean isForcedUserModeEnabled() throws ProxyException {
+        try {
+            return Boolean.parseBoolean(((ApiResponseElement) clientApi.forcedUser.isForcedUserModeEnabled()).getValue());
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Enables/disables the forced user mode.
      * @param forcedUserModeEnabled flag to enable/disable forced user mode.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setForcedUserModeEnabled(boolean forcedUserModeEnabled) throws ClientApiException {
-        clientApi.forcedUser.setForcedUserModeEnabled(apiKey, forcedUserModeEnabled);
+    public void setForcedUserModeEnabled(boolean forcedUserModeEnabled) throws ProxyException {
+        try {
+            clientApi.forcedUser.setForcedUserModeEnabled(apiKey, forcedUserModeEnabled);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Sets a {@link User} id as forced user for the given {@link net.continuumsecurity.proxy.model.Context}
      * @param contextId Id of a context.
      * @param userId Id of a user.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setForcedUser(String contextId, String userId) throws ClientApiException {
-        clientApi.forcedUser.setForcedUser(apiKey, contextId, userId);
+    public void setForcedUser(String contextId, String userId) throws ProxyException {
+        try {
+            clientApi.forcedUser.setForcedUser(apiKey, contextId, userId);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Returns list of supported session management methods.
      * @return List of supported session management methods.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public List<String> getSupportedSessionManagementMethods() throws ClientApiException {
-        ApiResponseList apiResponseList = (ApiResponseList) clientApi.sessionManagement.getSupportedSessionManagementMethods();
+    public List<String> getSupportedSessionManagementMethods() throws ProxyException {
+        ApiResponseList apiResponseList = null;
+        try {
+            apiResponseList = (ApiResponseList) clientApi.sessionManagement.getSupportedSessionManagementMethods();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         List<String> supportedSessionManagementMethods = new ArrayList<String>();
         for (ApiResponse apiResponse : apiResponseList.getItems()) {
             supportedSessionManagementMethods.add(((ApiResponseElement) apiResponse).getValue());
@@ -1017,11 +1199,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * Returns session management method selected for the given context.
      * @param contextId Id of a context.
      * @return Session management method for a given context.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public String getSessionManagementMethod(String contextId) throws ClientApiException {
-        return ((ApiResponseElement) clientApi.sessionManagement.getSessionManagementMethod(contextId)).getValue();
+    public String getSessionManagementMethod(String contextId) throws ProxyException {
+        try {
+            return ((ApiResponseElement) clientApi.sessionManagement.getSessionManagementMethod(contextId)).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
@@ -1029,22 +1216,33 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * @param contextId Id of a context.
      * @param sessionManagementMethodName Session management method name.
      * @param methodConfigParams Session management method config parameters.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void setSessionManagementMethod(String contextId, String sessionManagementMethodName, String methodConfigParams) throws ClientApiException {
-        clientApi.sessionManagement.setSessionManagementMethod(apiKey, contextId, sessionManagementMethodName, methodConfigParams);
+    public void setSessionManagementMethod(String contextId, String sessionManagementMethodName, String methodConfigParams) throws ProxyException {
+        try {
+            clientApi.sessionManagement.setSessionManagementMethod(apiKey, contextId, sessionManagementMethodName, methodConfigParams);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Returns the list of Anti CSRF token names.
      *
      * @return List of Anti CSRF token names.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public List<String> getAntiCsrfTokenNames() throws ClientApiException {
-        String rawResponse = ((ApiResponseElement) clientApi.acsrf.optionTokensNames()).getValue();
+    public List<String> getAntiCsrfTokenNames() throws ProxyException {
+        String rawResponse;
+        try {
+            rawResponse = ((ApiResponseElement) clientApi.acsrf.optionTokensNames()).getValue();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
         return Arrays.asList(rawResponse.substring(1, rawResponse.length()-1).split(", "));
     }
 
@@ -1052,22 +1250,32 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      * Adds an anti CSRF token with the given name, enabled by default.
      *
      * @param tokenName Anti CSRF token name.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void addAntiCsrfToken(String tokenName) throws ClientApiException {
-        clientApi.acsrf.addOptionToken(apiKey, tokenName);
+    public void addAntiCsrfToken(String tokenName) throws ProxyException {
+        try {
+            clientApi.acsrf.addOptionToken(apiKey, tokenName);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     /**
      * Removes the anti CSRF token with the given name.
      *
      * @param tokenName Anti CSRF token name.
-     * @throws ClientApiException
+     * @throws ProxyException
      */
     @Override
-    public void removeAntiCsrfToken(String tokenName) throws ClientApiException {
-        clientApi.acsrf.removeOptionToken(apiKey, tokenName);
+    public void removeAntiCsrfToken(String tokenName) throws ProxyException {
+        try {
+            clientApi.acsrf.removeOptionToken(apiKey, tokenName);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 
     private static class ClientApiUtils {
