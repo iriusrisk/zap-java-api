@@ -131,6 +131,34 @@ public class ZAProxyScannerTest {
         assertTrue(zaproxy.getAuthenticationMethodInfo(contextId).containsKey("methodName"));
         assertEquals(AuthenticationMethod.MANUAL_AUTHENTICATION.getValue(), zaproxy.getAuthenticationMethodInfo(contextId).get("methodName"));
         assertThat(zaproxy.getAuthMethodConfigParameters(AuthenticationMethod.MANUAL_AUTHENTICATION.getValue()), hasSize(0));
+
+        String hostName = "hello.world.com";
+        String realm = "My realm";
+        zaproxy.setHttpAuthentication(contextId, hostName, realm);
+
+        assertThat(zaproxy.getAuthenticationMethodInfo(contextId).keySet(), hasItems("methodName", "host", "realm", "port"));
+        assertEquals(AuthenticationMethod.HTTP_AUTHENTICATION.getValue(), zaproxy.getAuthenticationMethodInfo(contextId).get("methodName"));
+        assertEquals(hostName, zaproxy.getAuthenticationMethodInfo(contextId).get("host"));
+        assertEquals(realm, zaproxy.getAuthenticationMethodInfo(contextId).get("realm"));
+
+        zaproxy.setManualAuthentication(contextId);
+        assertThat(zaproxy.getAuthenticationMethodInfo(contextId).keySet(), hasItem("methodName"));
+        assertEquals(AuthenticationMethod.MANUAL_AUTHENTICATION.getValue(), zaproxy.getAuthenticationMethodInfo(contextId).get("methodName"));
+
+//        Commenting the Script based authentication tests, as they will work only when ZAP is on localhost, and a script with name as in scriptName is loaded already.
+//        String scriptName = "test_script";
+//        String loginURL = "https://hello.world.com/log/me/in";
+//        String method = "authenticate";
+//        String scriptConfigParams = "LoginURL=" + loginURL + "&Method=" + method;
+//        zaproxy.setScriptBasedAuthentication(contextId, scriptName, scriptConfigParams);
+//
+//        assertThat(zaproxy.getAuthenticationMethodInfo(contextId).keySet(), hasItems("methodName", "scriptName", "LoginURL", "Method"));
+//        assertEquals(AuthenticationMethod.SCRIPT_BASED_AUTHENTICATION.getValue(), zaproxy.getAuthenticationMethodInfo(contextId).get("methodName"));
+//        assertEquals(scriptName, zaproxy.getAuthenticationMethodInfo(contextId).get("scriptName"));
+//        assertEquals(loginURL, zaproxy.getAuthenticationMethodInfo(contextId).get("LoginURL"));
+//        assertEquals(method, zaproxy.getAuthenticationMethodInfo(contextId).get("Method"));
+
+
         List<Map<String, String>> formBasedAuthConfigParams = zaproxy.getAuthMethodConfigParameters(AuthenticationMethod.FORM_BASED_AUTHENTICATION.getValue());
         assertEquals(formBasedAuthConfigParams.size(), 2);
         for (Map<String, String> configParam : formBasedAuthConfigParams) {
@@ -143,6 +171,7 @@ public class ZAProxyScannerTest {
         zaproxy.setFormBasedAuthentication(contextId, loginUrl, loginRequestData);
 
         assertThat(zaproxy.getAuthenticationMethodInfo(contextId).keySet(), hasItems("methodName", "loginUrl", "loginRequestData"));
+        assertEquals(AuthenticationMethod.FORM_BASED_AUTHENTICATION.getValue(), zaproxy.getAuthenticationMethodInfo(contextId).get("methodName"));
         assertEquals(loginUrl, zaproxy.getAuthenticationMethodInfo(contextId).get("loginUrl"));
         assertEquals(loginRequestData, zaproxy.getAuthenticationMethodInfo(contextId).get("loginRequestData"));
 
@@ -208,6 +237,17 @@ public class ZAProxyScannerTest {
         assertThat(zaproxy.getSupportedSessionManagementMethods(), hasItems("cookieBasedSessionManagement", "httpAuthSessionManagement"));
         zaproxy.setSessionManagementMethod(contextId, "httpAuthSessionManagement", null);
         assertEquals("httpAuthSessionManagement", zaproxy.getSessionManagementMethod(contextId));
+    }
+
+    @Test
+    public void testScript() throws ProxyException {
+        List<String> engines = zaproxy.listEngines();
+        assertNotNull(engines);
+    }
+
+    @Test (expected = ProxyException.class)
+    public void testRemoveScript() {
+        zaproxy.removeScript("test");
     }
 
     @Test

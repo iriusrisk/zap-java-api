@@ -1,6 +1,7 @@
 package net.continuumsecurity.proxy;
 
 import net.continuumsecurity.proxy.model.Context;
+import net.continuumsecurity.proxy.model.Script;
 import org.zaproxy.clientapi.core.Alert;
 
 import java.io.IOException;
@@ -60,6 +61,13 @@ public interface ScanningProxy extends LoggingProxy {
      * @throws ProxyException
      */
     public void shutdown() throws ProxyException;
+
+    /**
+     * Enables handling of anti CSRF tokens during active scanning.
+     * @param enabled Boolean flag to enable / disable handling of anti CSRF tokens during active scan.
+     * @throws ProxyException
+     */
+    public void setOptionHandleAntiCSRFTokens(boolean enabled) throws ProxyException;
 
     /**
      * Creates a new context with given context name and sets it in scope if @param inScope is true.
@@ -162,4 +170,67 @@ public interface ScanningProxy extends LoggingProxy {
      * @throws ProxyException
      */
     void removeAntiCsrfToken(String tokenName) throws ProxyException;
+
+    /**
+     * Returns the list of scripting engines that ZAP supports.
+     * @return List of script engines.
+     * @throws ProxyException
+     */
+    List<String> listEngines() throws ProxyException;
+
+    /**
+     * Returns the list of scripts loaded into ZAP.
+     * @return List of scripts.
+     * @throws ProxyException
+     */
+    List<Script> listScripts() throws ProxyException;
+
+    /**
+     * Disables the script, if the script name is a valid one.
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    void disableScript(String scriptName) throws ProxyException;
+
+    /**
+     * Enables the script, if the script name is a valid one.
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    void enableScript(String scriptName) throws ProxyException;
+
+    /**
+     * Loads a script into ZAP session.
+     * @param scriptName Name of the script.
+     * @param scriptType Type of the script such as authentication, httpsender, etc.
+     * @param scriptEngine Script engine such as Rhino, Mozilla Zest, etc.
+     * @param fileName Name of the file including the full path.
+     * @throws ProxyException
+     */
+    void loadScript(String scriptName, String scriptType, String scriptEngine, String fileName) throws ProxyException;
+
+    /**
+     * Loads a script into ZAP session.
+     * @param scriptName Name of the script.
+     * @param scriptType Type of the script such as authentication, httpsender, etc.
+     * @param scriptEngine Script engine such Rhino, Mozilla Zest, etc.
+     * @param fileName Name of the file including the full path.
+     * @param scriptDescription Script description.
+     * @throws ProxyException
+     */
+    void loadScript(String scriptName, String scriptType, String scriptEngine, String fileName, String scriptDescription) throws ProxyException;
+
+    /**
+     * Removes the script with given name.
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    void removeScript(String scriptName) throws ProxyException;
+
+    /**
+     * Runs a stand alone script with the given name.
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    void runStandAloneScript(String scriptName) throws ProxyException;
 }

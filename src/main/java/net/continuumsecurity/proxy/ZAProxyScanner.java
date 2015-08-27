@@ -4,10 +4,7 @@ import edu.umass.cs.benchlab.har.HarEntry;
 import edu.umass.cs.benchlab.har.HarLog;
 import edu.umass.cs.benchlab.har.HarRequest;
 import edu.umass.cs.benchlab.har.tools.HarFileReader;
-import net.continuumsecurity.proxy.model.AuthenticationMethod;
-import net.continuumsecurity.proxy.model.Context;
-import net.continuumsecurity.proxy.model.ScanResponse;
-import net.continuumsecurity.proxy.model.User;
+import net.continuumsecurity.proxy.model.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -441,6 +438,22 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
     public void shutdown() {
         try {
             clientApi.core.shutdown(apiKey);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
+    /**
+     * Enables handling of anti CSRF tokens during active scanning.
+     *
+     * @param enabled Boolean flag to enable / disable handling of anti CSRF tokens during active scan.
+     * @throws ProxyException
+     */
+    @Override
+    public void setOptionHandleAntiCSRFTokens(boolean enabled) throws ProxyException {
+        try {
+            clientApi.ascan.setOptionHandleAntiCSRFTokens(apiKey, enabled);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException(e);
@@ -908,7 +921,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      */
     @Override
     public void setScriptBasedAuthentication(String contextId, String scriptName, String scriptConfigParams) throws ProxyException, UnsupportedEncodingException {
-        setAuthenticationMethod(contextId, AuthenticationMethod.SCRIPT_BASED_AUTHENTICATION.getValue(), "scriptName=" + URLEncoder.encode(scriptName, "UTF-8") + "&scriptConfigParams=" + URLEncoder.encode(scriptConfigParams, "UTF-8"));
+        setAuthenticationMethod(contextId, AuthenticationMethod.SCRIPT_BASED_AUTHENTICATION.getValue(), "scriptName=" + scriptName + "&" + scriptConfigParams);
     }
 
     /**
@@ -920,7 +933,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
      */
     @Override
     public List<User> getUsersList(String contextId) throws ProxyException, IOException {
-        ApiResponseList apiResponseList = null;
+        ApiResponseList apiResponseList;
         try {
             apiResponseList = (ApiResponseList) clientApi.users.usersList(contextId);
         } catch (ClientApiException e) {
@@ -1272,6 +1285,149 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
     public void removeAntiCsrfToken(String tokenName) throws ProxyException {
         try {
             clientApi.acsrf.removeOptionToken(apiKey, tokenName);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
+    /**
+     * Returns the list of scripting engines that ZAP supports.
+     *
+     * @return List of script engines.
+     * @throws ProxyException
+     */
+    @Override
+    public List<String> listEngines() throws ProxyException {
+        List<String> engines = new ArrayList<String>();
+        try {
+            ApiResponseList apiResponseList = (ApiResponseList) clientApi.script.listEngines();
+            for (ApiResponse apiResponse : apiResponseList.getItems()) {
+                engines.add(((ApiResponseElement) apiResponse).getValue());
+            }
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+        return engines;
+    }
+
+    /**
+     * Returns the list of scripts loaded into ZAP.
+     *
+     * @return List of scripts.
+     * @throws ProxyException
+     */
+    @Override
+    public List<Script> listScripts() throws ProxyException {
+        ApiResponseList apiResponseList;
+        try {
+            apiResponseList = (ApiResponseList) clientApi.script.listScripts();
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+        List<Script> scripts = new ArrayList<Script>();
+        if (apiResponseList != null) {
+            for (ApiResponse apiResponse : apiResponseList.getItems()) {
+                scripts.add(new Script((ApiResponseSet) apiResponse));
+            }
+        }
+        return scripts;
+    }
+
+    /**
+     * Disables the script, if the script name is a valid one.
+     *
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    @Override
+    public void disableScript(String scriptName) throws ProxyException {
+        try {
+            clientApi.script.disable(apiKey, scriptName);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
+    /**
+     * Enables the script, if the script name is a valid one.
+     *
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    @Override
+    public void enableScript(String scriptName) throws ProxyException {
+        try {
+            clientApi.script.enable(apiKey, scriptName);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
+    /**
+     * Loads a script into ZAP session.
+     *
+     * @param scriptName   Name of the script.
+     * @param scriptType   Type of the script such as authentication, httpsender, etc.
+     * @param scriptEngine Script engine such as Rhino, Mozilla Zest, etc.
+     * @param fileName     Name of the file including the full path.
+     * @throws ProxyException
+     */
+    @Override
+    public void loadScript(String scriptName, String scriptType, String scriptEngine, String fileName) throws ProxyException {
+        loadScript(scriptName, scriptType, scriptEngine, fileName, "");
+    }
+
+    /**
+     * Loads a script into ZAP session.
+     *
+     * @param scriptName        Name of the script.
+     * @param scriptType        Type of the script such as authentication, httpsender, etc.
+     * @param scriptEngine      Script engine such Rhino, Mozilla Zest, etc.
+     * @param fileName          Name of the file including the full path.
+     * @param scriptDescription Script description.
+     * @throws ProxyException
+     */
+    @Override
+    public void loadScript(String scriptName, String scriptType, String scriptEngine, String fileName, String scriptDescription) throws ProxyException {
+        try {
+            clientApi.script.load(apiKey, scriptName, scriptType, scriptEngine, fileName, scriptDescription);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
+    /**
+     * Removes the script with given name.
+     *
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    @Override
+    public void removeScript(String scriptName) throws ProxyException {
+        try {
+            clientApi.script.remove(apiKey, scriptName);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
+    /**
+     * Runs a stand alone script with the given name.
+     *
+     * @param scriptName Name of the script.
+     * @throws ProxyException
+     */
+    @Override
+    public void runStandAloneScript(String scriptName) throws ProxyException {
+        try {
+            clientApi.script.runStandAloneScript(apiKey, scriptName);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException(e);
