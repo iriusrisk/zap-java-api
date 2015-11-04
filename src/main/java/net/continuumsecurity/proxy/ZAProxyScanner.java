@@ -170,7 +170,8 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
         }
     }
 
-    public byte[] getHtmlReport() {
+    @Override
+    public byte[] getHtmlReport() throws ProxyException {
         try {
             return clientApi.core.htmlreport(apiKey);
         } catch (ClientApiException e) {
@@ -471,5 +472,19 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
             return createHarLog(bytesHarLog).getEntries().getEntries();
         }
 
+    }
+
+    /**
+     * Shuts down ZAP.
+     * @throws ProxyException
+     */
+    @Override
+    public void shutdown() {
+        try {
+            clientApi.core.shutdown(apiKey);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
     }
 }
