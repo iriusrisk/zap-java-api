@@ -170,6 +170,15 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
         }
     }
 
+    public byte[] getHtmlReport() {
+        try {
+            return clientApi.core.htmlreport(apiKey);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
     public List<Alert> getAlerts(int start, int count) throws ProxyException {
         try {
             return clientApi.getAlerts("", start, count);
@@ -178,6 +187,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
             throw new ProxyException(e);
         }
     }
+
 
     public int getAlertsCount() throws ProxyException {
         try {
@@ -313,7 +323,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
     @Override
     public void spider(String url) {
         try {
-            clientApi.spider.scan(apiKey,url,null);
+            clientApi.spider.scan(apiKey,url,null, "true");
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException(e);

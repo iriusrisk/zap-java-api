@@ -61,9 +61,9 @@
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.12" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.12" level="project" />
     <orderEntry type="module-library">
-      <library name="Maven: org.owasp:zaproxy-client-api:2.4.1">
+      <library name="Maven: org.owasp:zaproxy-client-api:2.4.2">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/zap-api-2.4-v1.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/zap-api-2.4-v6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

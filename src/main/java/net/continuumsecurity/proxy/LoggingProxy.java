@@ -31,6 +31,7 @@ public interface LoggingProxy {
      */
     int getHistoryCount() throws ProxyException;
 
+
     /*
         Search through all the HarRequests for the given regex.  The search should be performed on all request headers as well as post body.
         When a match is found, return the entire HarEntry (request and response).
