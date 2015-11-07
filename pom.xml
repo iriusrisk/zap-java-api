@@ -46,11 +46,6 @@
             <version>2.32.0</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.12</version>
-        </dependency>
-        <dependency>
             <groupId>org.owasp</groupId>
             <artifactId>zaproxy-client-api</artifactId>
             <version>2.4.2</version>
@@ -60,9 +55,7 @@
         <dependency>
             <groupId>edu.umass.cs.benchlab</groupId>
             <artifactId>harlib</artifactId>
-            <version>1.1.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/harlib-1.1.1.jar</systemPath>
+            <version>1.1.2</version>
         </dependency>
     </dependencies>
 
