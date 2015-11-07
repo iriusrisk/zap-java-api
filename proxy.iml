@@ -58,21 +58,12 @@
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-support:2.32.0" level="project" />
     <orderEntry type="library" name="Maven: org.webbitserver:webbit:0.4.14" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty:3.5.2.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.12" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.12" level="project" />
+    <orderEntry type="library" name="Maven: edu.umass.cs.benchlab:harlib:1.1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.8.5" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: org.owasp:zaproxy-client-api:2.4.2">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/zap-api-2.4-v6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: edu.umass.cs.benchlab:harlib:1.1.1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/harlib-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
