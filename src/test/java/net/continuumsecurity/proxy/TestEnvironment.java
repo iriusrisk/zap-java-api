@@ -7,7 +7,7 @@ public class TestEnvironment {
     Server server;
 
     public TestEnvironment() {
-        server = new Server(9110);
+        server = new Server(9090);
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
         webapp.setWar("src/test/resources/ropeytasks-0.1.war");

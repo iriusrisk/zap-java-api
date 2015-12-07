@@ -22,9 +22,7 @@ import java.util.logging.Logger;
 public class ZAProxyScanner implements ScanningProxy, Spider {
     Logger log = Logger.getLogger(ZAProxyScanner.class.getName());
 
-    private static final String MINIMUM_ZAP_DAILY_VERSION = "D-2013-11-17";
-    // TODO Update with valid version number when a new main ZAP release is available.
-    private static final String MINIMUM_ZAP_VERSION = "2.3";
+    private static final String MINIMUM_ZAP_VERSION = "2.4.3";
 
     private final ClientApi clientApi;
     private final Proxy seleniumProxy;
@@ -66,15 +64,11 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
             final String zapVersion = ((ApiResponseElement) clientApi.core.version()).getValue();
 
             boolean minimumRequiredZapVersion = false;
-            if (zapVersion.startsWith("D-")) {
-                minimumRequiredZapVersion = zapVersion.compareTo(MINIMUM_ZAP_DAILY_VERSION) >= 0;
-            } else {
-                minimumRequiredZapVersion = compareZapVersions(zapVersion, MINIMUM_ZAP_VERSION) >= 0;
-            }
+            minimumRequiredZapVersion = validZAPVersion(MINIMUM_ZAP_VERSION, zapVersion);
 
             if (!minimumRequiredZapVersion) {
                 throw new IllegalStateException("Minimum required ZAP version not met, expected >= \""
-                        + MINIMUM_ZAP_DAILY_VERSION + "\" or >= \"" + MINIMUM_ZAP_VERSION + "\" but got: " + zapVersion);
+                        + MINIMUM_ZAP_VERSION + "\" but got: " + zapVersion);
             }
         } catch (ClientApiException e) {
             e.printStackTrace();
@@ -304,27 +298,25 @@ public class ZAProxyScanner implements ScanningProxy, Spider {
         return seleniumProxy;
     }
 
-    private static int compareZapVersions(String version, String otherVersion) {
-        final String[] v1 = version.split("\\.");
-        final String[] v2 = otherVersion.split("\\.");
+    private static boolean validZAPVersion(String expected, String given) {
+        final String[] expectedVersion = expected.split("\\.");
+        final String[] givenVersion = given.split("\\.");
 
-        for (int i = 0; i < v1.length; i++) {
-            if (i >= v2.length) {
-                return 1;
+        for (int i = 0; i < givenVersion.length; i++) {
+            if (i < expectedVersion.length) {
+                if (Integer.parseInt(givenVersion[i]) < Integer.parseInt(expectedVersion[i])) return false;
             }
-            if (v1[i].equals(v2[i])) {
-                continue;
-            }
-            return (Integer.parseInt(v1[i]) - Integer.parseInt(v2[i]));
         }
 
-        return -1;
+        return true;
     }
 
     @Override
-    public void spider(String url) {
+    public void spider(String url, Integer maxChildren, boolean recurse, String contextName) {
+        String contextNameString = contextName == null ? "Default Context" : contextName; //Something must be specified else zap throws an exception
+        String maxChildrenString = maxChildren == null ? null : String.valueOf(maxChildren);
         try {
-            clientApi.spider.scan(apiKey,url,null, "true");
+            clientApi.spider.scan(apiKey,url,maxChildrenString,  String.valueOf(recurse), contextNameString);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException(e);
