@@ -1,6 +1,5 @@
 package net.continuumsecurity.proxy;
 
-
 import edu.umass.cs.benchlab.har.HarEntry;
 import edu.umass.cs.benchlab.har.HarRequest;
 import edu.umass.cs.benchlab.har.HarResponse;
@@ -15,7 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.zaproxy.clientapi.core.Alert;
@@ -42,7 +41,6 @@ public class ZAProxyScannerTest {
     static ZAProxyScanner zaproxy;
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
-    static String CHROME = "src/test/resources/chromedriver-mac";
     static String BASEURL = "http://localhost:9090/";
     public static final String TEST_CONTEXT_NAME = "Test Context";
     public static final Pattern INCLUDE_REGEX_PATTERN = Pattern.compile("http://test-me.com/*");
@@ -52,12 +50,11 @@ public class ZAProxyScannerTest {
 
     @BeforeClass
     public static void configure() throws Exception {
-        zaproxy = new ZAProxyScanner(HOST, PORT, "");
+        zaproxy = new ZAProxyScanner(HOST, PORT, "apisecret");
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(CapabilityType.PROXY, zaproxy.getSeleniumProxy());
 
-        System.setProperty("webdriver.chrome.driver", CHROME);
-        driver = new ChromeDriver(capabilities);
+        driver = new HtmlUnitDriver(capabilities);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
     }
@@ -327,6 +324,8 @@ public class ZAProxyScannerTest {
 
         login("bob", "password");
         zaproxy.setEnableScanners("40018", true);
+        zaproxy.setScannerAttackStrength("40018", "High");
+        zaproxy.setScannerAlertThreshold("40018", "low");
         zaproxy.deleteAlerts();
         zaproxy.scan(BASEURL);
         int scanId = zaproxy.getLastScannerScanId();

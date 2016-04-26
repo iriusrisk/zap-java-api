@@ -3,7 +3,7 @@ package net.continuumsecurity.proxy;
 import java.util.List;
 
 public interface Spider {
-    public void spider(String url);
+    public void spider(String url, Integer maxChildren, boolean recurse, String contextName);
     public int getSpiderProgress(int scanId);
     public int getLastSpiderScanId();
     public List<String> getSpiderResults(int scanId);

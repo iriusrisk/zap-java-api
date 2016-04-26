@@ -233,4 +233,14 @@ public interface ScanningProxy extends LoggingProxy {
      * @throws ProxyException
      */
     void runStandAloneScript(String scriptName) throws ProxyException;
+
+   /**
+    * Performs the Active Scan with the given parameters and configuration.
+    * @param url Url to active scan.
+    * @param contextId Id of the context.
+    * @param userId Id of the user.
+    * @param recurse Flag to perform the active scan recursively.
+    * @throws ProxyException
+    */
+    void scanAsUser(String url, String contextId, String userId, boolean recurse) throws ProxyException;
 }
