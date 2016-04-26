@@ -355,13 +355,67 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
 
    @Override
    public void spider(String url, Integer maxChildren, boolean recurse, String contextName) {
-      //Something must be specified else zap throws an exception
+      // Defaulting the context to "Default Context" in ZAP
       String contextNameString = contextName == null ? "Default Context" : contextName;
       String maxChildrenString = maxChildren == null ? null : String.valueOf(maxChildren);
 
       try {
          clientApi.spider
                .scan(apiKey, url, maxChildrenString, String.valueOf(recurse), contextNameString);
+      } catch (ClientApiException e) {
+         e.printStackTrace();
+      }
+   }
+
+   @Override
+   public void spider(String url) {
+      try {
+         clientApi.spider
+               .scan(apiKey, url, null, null, null);
+      } catch (ClientApiException e) {
+         e.printStackTrace();
+      }
+   }
+
+   @Override
+   public void spider(String url, boolean recurse, String contextName) {
+      //Something must be specified else zap throws an exception
+      String contextNameString = contextName == null ? "Default Context" : contextName;
+
+      try {
+         clientApi.spider
+               .scan(apiKey, url, null, String.valueOf(recurse), contextNameString);
+      } catch (ClientApiException e) {
+         e.printStackTrace();
+      }
+   }
+
+   @Override
+   public void spiderAsUser(String url, String contextId, String userId) {
+      try {
+         clientApi.spider
+               .scanAsUser(apiKey, url, contextId, userId, null, null);
+      } catch (ClientApiException e) {
+         e.printStackTrace();
+      }
+   }
+
+   @Override
+   public void spiderAsUser(String url, String contextId, String userId, boolean recurse) {
+      try {
+         clientApi.spider
+               .scanAsUser(apiKey, url, contextId, userId, null, String.valueOf(recurse));
+      } catch (ClientApiException e) {
+         e.printStackTrace();
+      }
+   }
+
+   @Override
+   public void spiderAsUser(String url, String contextId, String userId,
+         Integer maxChildren, boolean recurse) {
+      try {
+         clientApi.spider
+               .scanAsUser(apiKey, url, contextId, userId, String.valueOf(maxChildren), String.valueOf(recurse));
       } catch (ClientApiException e) {
          e.printStackTrace();
       }
