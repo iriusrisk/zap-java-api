@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
-   private static final String MINIMUM_ZAP_VERSION = "2.4.3";
+   private static final String MINIMUM_ZAP_VERSION = "2.4.3"; // Weekly builds are also allowed.
    private final ClientApi clientApi;
    private final Proxy seleniumProxy;
    private final String apiKey;
@@ -76,8 +76,14 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
    }
 
    private static boolean validZAPVersion(String expected, String given) {
+
       final String[] expectedVersion = expected.split("\\.");
       final String[] givenVersion = given.split("\\.");
+
+      // Assumption: If the version # doesn't have ".", it is weekly build.
+      if (givenVersion.length == 1) {
+         return true;
+      }
 
       for (int i = 0; i < expectedVersion.length; i++) {
          if (i < expectedVersion.length) {
@@ -94,7 +100,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication {
       try {
          final String zapVersion = ((ApiResponseElement) clientApi.core.version()).getValue();
 
-         boolean minimumRequiredZapVersion = false;
+         boolean minimumRequiredZapVersion;
          minimumRequiredZapVersion = validZAPVersion(MINIMUM_ZAP_VERSION, zapVersion);
 
          if (!minimumRequiredZapVersion) {
