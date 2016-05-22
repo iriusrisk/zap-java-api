@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.continuumsecurity</groupId>
-    <artifactId>proxy</artifactId>
+    <artifactId>zap-java-api</artifactId>
     <version>2.4.3</version>
 
     <build>
@@ -35,6 +35,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.12</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
@@ -50,7 +55,7 @@
             <artifactId>zaproxy-client-api</artifactId>
             <version>2.4.3</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/zap-api-2.4-v7.jar</systemPath>
+            <systemPath>${project.basedir}/lib/zap-api-2.4-v9.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>edu.umass.cs.benchlab</groupId>

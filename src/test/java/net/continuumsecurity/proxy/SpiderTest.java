@@ -12,16 +12,19 @@ public class SpiderTest {
     static ZAProxyScanner zaproxy;
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
-    static String BASEURL = "http://localhost:9090/user/login";
+    static String BASEURL = "http://testphp.vulnweb.com/";
+    static String DEFAULT_CONTEXT = "Default Context";
 
     @BeforeClass
     public static void configure() throws Exception {
-        zaproxy = new ZAProxyScanner(HOST, PORT,"apisecret");
+        zaproxy = new ZAProxyScanner(HOST, PORT, "apisecret");
     }
+
 
     @Test
     public void testSpider() {
-        zaproxy.spider(BASEURL,2, true, null);
+        zaproxy.setIncludeInContext(DEFAULT_CONTEXT, ".*");
+        zaproxy.spider(BASEURL, true, DEFAULT_CONTEXT);
         int progress = 0;
         while (progress < 100) {
             progress = zaproxy.getSpiderProgress(zaproxy.getLastSpiderScanId());
@@ -33,7 +36,7 @@ public class SpiderTest {
         }
         List<String> results = zaproxy.getSpiderResults(zaproxy.getLastSpiderScanId());
 
-        assertThat(results.size(),equalTo(3));
+        assertThat(results.size(),equalTo(58));
         assert results.contains(BASEURL);
         for (String url : results) {
            System.out.println(url);
