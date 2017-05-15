@@ -25,9 +25,9 @@ public class ScanInfo {
     }
 
     public ScanInfo(ApiResponseSet response) {
-        id = Integer.parseInt(response.getAttribute("id"));
-        progress = Integer.parseInt(response.getAttribute("progress"));
-        state = State.parse(response.getAttribute("state"));
+        id = Integer.parseInt(response.getStringValue("id"));
+        progress = Integer.parseInt(response.getStringValue("progress"));
+        state = State.parse(response.getStringValue("state"));
     }
 
     public int getProgress() {

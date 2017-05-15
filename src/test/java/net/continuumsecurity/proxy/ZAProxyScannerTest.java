@@ -6,7 +6,7 @@ import edu.umass.cs.benchlab.har.HarResponse;
 import net.continuumsecurity.proxy.model.AuthenticationMethod;
 import net.continuumsecurity.proxy.model.Context;
 import net.continuumsecurity.proxy.model.User;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -41,7 +41,8 @@ public class ZAProxyScannerTest {
     static ZAProxyScanner zaproxy;
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
-    static String BASEURL = "http://localhost:9090/";
+    static String BASEURL = "http://localhost:8080/";
+    static String apiKey = "apisecret";
     public static final String TEST_CONTEXT_NAME = "Test Context";
     public static final Pattern INCLUDE_REGEX_PATTERN = Pattern.compile("http://test-me.com/*");
     public static final Pattern EXCLUDE_REGEX_PATTERN = Pattern.compile("https://do-not-test-me.com/*");
@@ -50,7 +51,7 @@ public class ZAProxyScannerTest {
 
     @BeforeClass
     public static void configure() throws Exception {
-        zaproxy = new ZAProxyScanner(HOST, PORT, "apisecret");
+        zaproxy = new ZAProxyScanner(HOST, PORT, apiKey);
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(CapabilityType.PROXY, zaproxy.getSeleniumProxy());
 
@@ -196,8 +197,8 @@ public class ZAProxyScannerTest {
 
         Map<String, String> credentials = zaproxy.getAuthenticationCredentials(contextId, userId);
         assertEquals("UsernamePasswordAuthenticationCredentials", credentials.get("type"));
-        assertEquals("null", credentials.get("username"));
-        assertEquals("null", credentials.get("password"));
+        assertEquals("", credentials.get("username"));
+        assertEquals("", credentials.get("password"));
 
         String userNameParameter = "user1";
         String passwordParameter = "password1";
@@ -284,7 +285,7 @@ public class ZAProxyScannerTest {
         driver.get(BASEURL + "task/search?q=test&search=Search");
         HarRequest origRequest = zaproxy.getHistory().get(0).getRequest();
         HarResponse origResponse = zaproxy.getHistory().get(0).getResponse();
-        List<HarEntry> responses = zaproxy.makeRequest(origRequest, true);
+        List<HarEntry> responses = zaproxy.makeRequest(origRequest, false);
         HarResponse manualResponse = responses.get(0).getResponse();
 
         assertEquals(origResponse.getBodySize(), manualResponse.getBodySize());
@@ -309,7 +310,7 @@ public class ZAProxyScannerTest {
         HarRequest copy = history.get(history.size() - 1).getRequest(); //The last request will contain a session ID
         copy = HarUtils.changeCookieValue(copy, "JSESSIONID", "nothing");
 
-        List<HarEntry> responses = zaproxy.makeRequest(copy, true);
+        List<HarEntry> responses = zaproxy.makeRequest(copy, false);
         //The changed session ID
         assertThat(responses.get(0).getRequest().getCookies().getCookies().get(0).getValue(), equalTo("nothing"));
     }
@@ -322,9 +323,10 @@ public class ZAProxyScannerTest {
         System.out.println("Logging on");
 
         login("bob", "password");
-        zaproxy.setEnableScanners("40018", true);
-        zaproxy.setScannerAttackStrength("40018", "High");
-        zaproxy.setScannerAlertThreshold("40018", "low");
+        String contextID="40018";
+        zaproxy.setEnableScanners(contextID, true);
+        zaproxy.setScannerAttackStrength(contextID, "High");
+        zaproxy.setScannerAlertThreshold(contextID, "low");
         zaproxy.deleteAlerts();
         zaproxy.scan(BASEURL);
         int scanId = zaproxy.getLastScannerScanId();

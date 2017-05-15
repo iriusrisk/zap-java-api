@@ -17,21 +17,21 @@ public class Context {
     private int authenticationDetectionMethodId;
 
     public Context(ApiResponseSet response) {
-        id = response.getAttribute("id");
-        name = response.getAttribute("name");
-        description = response.getAttribute("description");
-        loggedInPattern = response.getAttribute("loggedInPattern");
-        loggedOutPattern = response.getAttribute("loggedOutPattern");
-        String includedRegexsNode = response.getAttribute("includeRegexs");
+        id = response.getStringValue("id");
+        name = response.getStringValue("name");
+        description = response.getStringValue("description");
+        loggedInPattern = response.getStringValue("loggedInPattern");
+        loggedOutPattern = response.getStringValue("loggedOutPattern");
+        String includedRegexsNode = response.getStringValue("includeRegexs");
         if (includedRegexsNode.length() > 2) {
             includedRegexs = Arrays.asList(includedRegexsNode.substring(1, includedRegexsNode.length()-1).split(", "));
         }
-        String excludedRegexsNode = response.getAttribute("excludeRegexs");
+        String excludedRegexsNode = response.getStringValue("excludeRegexs");
         if (excludedRegexsNode.length() > 2) {
             excludedRegexs = Arrays.asList(excludedRegexsNode.substring(1, excludedRegexsNode.length()-1).split(", "));
         }
-        authType = response.getAttribute("authType");
-        authenticationDetectionMethodId = Integer.parseInt(response.getAttribute("authenticationDetectionMethodId"));
+        authType = response.getStringValue("authType");
+        authenticationDetectionMethodId = Integer.parseInt(response.getStringValue("authenticationDetectionMethodId"));
     }
 
     public String getId() {

@@ -63,7 +63,7 @@
     <orderEntry type="module-library">
       <library name="Maven: org.owasp:zaproxy-client-api:2.4.3">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/zap-api-2.4-v9.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/zap-api-1.2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
