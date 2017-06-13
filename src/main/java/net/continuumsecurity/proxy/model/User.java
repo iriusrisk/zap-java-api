@@ -16,12 +16,12 @@ public class User {
     Map<String, String> credentials;
 
     public User(ApiResponseSet apiResponseSet) throws IOException {
-        id = apiResponseSet.getAttribute("id");
-        enabled = Boolean.valueOf(apiResponseSet.getAttribute("enabled"));
-        contextId = apiResponseSet.getAttribute("contextId");
-        name = apiResponseSet.getAttribute("name");
+        id = apiResponseSet.getStringValue("id");
+        enabled = Boolean.valueOf(apiResponseSet.getStringValue("enabled"));
+        contextId = apiResponseSet.getStringValue("contextId");
+        name = apiResponseSet.getStringValue("name");
         ObjectMapper mapper = new ObjectMapper();
-        credentials = mapper.readValue(apiResponseSet.getAttribute("credentials"), new TypeReference<HashMap<String,String>>(){});
+        credentials = mapper.readValue(apiResponseSet.getStringValue("credentials"), new TypeReference<HashMap<String,String>>(){});
     }
 
     public String getId() {
