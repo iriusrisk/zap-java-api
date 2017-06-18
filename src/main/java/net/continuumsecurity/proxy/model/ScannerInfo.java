@@ -11,9 +11,9 @@ public class ScannerInfo {
     int cweId;
 
     public ScannerInfo(ApiResponseSet responseSet) {
-        enabled = Boolean.parseBoolean(responseSet.getAttribute("enabled"));
-        wascId = Integer.parseInt(responseSet.getAttribute("wascid"));
-        cweId = Integer.parseInt(responseSet.getAttribute("cweid"));
+        enabled = Boolean.parseBoolean(responseSet.getStringValue("enabled"));
+        wascId = Integer.parseInt(responseSet.getStringValue("wascid"));
+        cweId = Integer.parseInt(responseSet.getStringValue("cweid"));
     }
 
     public boolean isEnabled() {

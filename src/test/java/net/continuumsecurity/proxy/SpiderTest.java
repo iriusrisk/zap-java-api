@@ -1,18 +1,21 @@
 package net.continuumsecurity.proxy;
 
+import net.continuumsecurity.proxy.model.Context;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class SpiderTest {
     static ZAProxyScanner zaproxy;
     static String HOST = "127.0.0.1";
     static int PORT = 8888;
-    static String BASEURL = "http://testphp.vulnweb.com/";
+    static String BASEURL = "http://testphp.vulnweb.com";
     static String DEFAULT_CONTEXT = "Default Context";
 
     @BeforeClass
@@ -20,10 +23,17 @@ public class SpiderTest {
         zaproxy = new ZAProxyScanner(HOST, PORT, "apisecret");
     }
 
+    @Test
+    public void testIncludeInContextForNewContext() {
+        final String MYCONTEXT = "My Special context";
+        zaproxy.setIncludeInContext(MYCONTEXT, BASEURL.concat(".*"));
+        Context context = zaproxy.getContextInfo(MYCONTEXT);
+        assertThat(context.getId(),is(notNullValue()));
+    }
 
     @Test
     public void testSpider() {
-        zaproxy.setIncludeInContext(DEFAULT_CONTEXT, ".*");
+        zaproxy.setIncludeInContext(DEFAULT_CONTEXT, BASEURL.concat(".*"));
         zaproxy.spider(BASEURL, true, DEFAULT_CONTEXT);
         int progress = 0;
         while (progress < 100) {
@@ -36,7 +46,7 @@ public class SpiderTest {
         }
         List<String> results = zaproxy.getSpiderResults(zaproxy.getLastSpiderScanId());
 
-        assertThat(results.size(),equalTo(58));
+        assertThat(results.size(),equalTo(63));
         assert results.contains(BASEURL);
         for (String url : results) {
            System.out.println(url);

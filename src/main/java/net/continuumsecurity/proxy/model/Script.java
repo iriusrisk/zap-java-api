@@ -13,11 +13,11 @@ public class Script {
     String description;
 
     public Script(ApiResponseSet apiResponseSet) {
-        name = apiResponseSet.getAttribute("name");
-        type = apiResponseSet.getAttribute("type");
-        engine = apiResponseSet.getAttribute("engine");
-        error = Boolean.valueOf(apiResponseSet.getAttribute("error"));
-        description = apiResponseSet.getAttribute("description");
+        name = apiResponseSet.getStringValue("name");
+        type = apiResponseSet.getStringValue("type");
+        engine = apiResponseSet.getStringValue("engine");
+        error = Boolean.valueOf(apiResponseSet.getStringValue("error"));
+        description = apiResponseSet.getStringValue("description");
     }
 
     public String getName() {
