@@ -122,7 +122,7 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication, Co
             clientApi.ascan.setScannerAttackStrength(scannerId, strength, null);
         } catch (ClientApiException e) {
             e.printStackTrace();
-            throw new ProxyException("Error occurred for setScannerAttackStrength", e);
+            throw new ProxyException("Error occurred for setScannerAttackStrength for scannerId: "+scannerId+" and strength: "+strength, e);
         }
     }
 
@@ -350,7 +350,9 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication, Co
             throws ProxyException {
         try {
             String harRequestStr = ClientApiUtils.convertHarRequestToString(request);
-            return ClientApiUtils.getHarEntries(clientApi.core.sendHarRequest(harRequestStr, Boolean.toString(followRedirect)));
+            byte[] response = clientApi.core.sendHarRequest(harRequestStr, Boolean.toString(followRedirect));
+            String responseAsString = new String(response);
+            return ClientApiUtils.getHarEntries(response);
         } catch (ClientApiException e) {
             e.printStackTrace();
 
@@ -444,6 +446,16 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication, Co
     public void excludeFromScanner(String regex) {
         try {
             clientApi.ascan.excludeFromScan(regex);
+        } catch (ClientApiException e) {
+            e.printStackTrace();
+            throw new ProxyException(e);
+        }
+    }
+
+    @Override
+    public void setAttackMode() throws ProxyException {
+        try {
+            clientApi.core.setMode("attack");
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException(e);
@@ -1610,6 +1622,20 @@ public class ZAProxyScanner implements ScanningProxy, Spider, Authentication, Co
     public void setIncludeInContext(String contextName, String regex) {
         try {
             clientApi.context.includeInContext(contextName, regex);
+        } catch (ClientApiException e) {
+            if ("does_not_exist".equalsIgnoreCase(e.getCode())) {
+                createContext(contextName);
+                setIncludeInContext(contextName, regex);
+            } else {
+                e.printStackTrace();
+                throw new ProxyException(e);
+            }
+        }
+    }
+
+    private void createContext(String contextName) {
+        try {
+            clientApi.context.newContext(contextName);
         } catch (ClientApiException e) {
             e.printStackTrace();
             throw new ProxyException(e);

@@ -1,22 +1,28 @@
 package net.continuumsecurity.proxy.model;
 
-import org.zaproxy.clientapi.core.ApiResponseElement;
 import org.zaproxy.clientapi.core.ApiResponseSet;
 
 /**
  * Created by stephen on 16/04/15.
  */
-public class ScanInfo {
+public class ScanInfo implements Comparable<ScanInfo> {
     int progress;
     int id;
     State state;
 
+    @Override
+    public int compareTo(ScanInfo o) {
+        return id-o.getId();
+    }
+
     public enum State {
+        NOT_STARTED,
         FINISHED,
         PAUSED,
         RUNNING;
 
         public static State parse(String s) {
+            if ("NOT_STARTED".equalsIgnoreCase(s)) return NOT_STARTED;
             if ("FINISHED".equalsIgnoreCase(s)) return FINISHED;
             if ("PAUSED".equalsIgnoreCase(s)) return PAUSED;
             if ("RUNNING".equalsIgnoreCase(s)) return RUNNING;

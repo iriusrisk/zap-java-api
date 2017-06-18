@@ -1,11 +1,14 @@
 package net.continuumsecurity.proxy;
 
+import net.continuumsecurity.proxy.model.Context;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class SpiderTest {
@@ -20,6 +23,13 @@ public class SpiderTest {
         zaproxy = new ZAProxyScanner(HOST, PORT, "apisecret");
     }
 
+    @Test
+    public void testIncludeInContextForNewContext() {
+        final String MYCONTEXT = "My Special context";
+        zaproxy.setIncludeInContext(MYCONTEXT, BASEURL.concat(".*"));
+        Context context = zaproxy.getContextInfo(MYCONTEXT);
+        assertThat(context.getId(),is(notNullValue()));
+    }
 
     @Test
     public void testSpider() {

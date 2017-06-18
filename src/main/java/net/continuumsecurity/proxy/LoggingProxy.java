@@ -53,4 +53,7 @@ public interface LoggingProxy {
        Return the details of the proxy in Selenium format: org.openqa.selenium.Proxy
      */
 	Proxy getSeleniumProxy() throws UnknownHostException;
+
+    public void setAttackMode() throws ProxyException;
+
 }

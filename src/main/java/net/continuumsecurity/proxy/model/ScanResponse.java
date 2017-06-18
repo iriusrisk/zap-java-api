@@ -1,11 +1,11 @@
 package net.continuumsecurity.proxy.model;
 
-import net.continuumsecurity.proxy.model.ScanInfo;
 import org.zaproxy.clientapi.core.ApiResponse;
 import org.zaproxy.clientapi.core.ApiResponseList;
 import org.zaproxy.clientapi.core.ApiResponseSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +18,7 @@ public class ScanResponse {
         for (ApiResponse rawResponse : responseList.getItems()) {
             scans.add(new ScanInfo((ApiResponseSet)rawResponse));
         }
+        Collections.sort(scans);
     }
 
     public List<ScanInfo> getScans() {
@@ -32,6 +33,7 @@ public class ScanResponse {
     }
 
     public ScanInfo getLastScan() {
+        if (scans.size() == 0) throw new RuntimeException("No scans found");
         return scans.get(scans.size()-1);
     }
 }
